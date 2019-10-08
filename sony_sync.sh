@@ -1,6 +1,6 @@
-"""
-@author: Vievk V. Arya [github.com/vivekveersain]
-"""
+#"""
+#@author: Vievk V. Arya [github.com/vivekveersain]
+#"""
 
 python /Users/vivekarya/git/Mac/music_cleaner.py
 find /Users/vivekarya/Music -type d -empty -delete

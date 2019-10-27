@@ -22,5 +22,5 @@ class Browser:
                 except: pass
 
 what = input("What to search for?: ")
-browser = Browser('/Library', what)
+browser = Browser('/', what)
 browser.run()

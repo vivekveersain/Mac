@@ -8,9 +8,9 @@ import os
 class Music:
     def __init__(self, base_folder = None):
         self.base = base_folder
-        
+
     def run(self): self.browser(self.base)
-    
+
     def clean(self, file):
         ext = file.split(".")[-1]
         path = "/".join(file.split("/")[:-1])

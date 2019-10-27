@@ -2,7 +2,7 @@
 #@author: Vievk V. Arya [github.com/vivekveersain]
 #"""
 
-python /Users/vivekarya/git/Mac/music_cleaner.py
+python3 /Users/vivekarya/github/Mac/music_cleaner.py
 find /Users/vivekarya/Music -type d -empty -delete
 
 if mount | grep -q '/Volumes/WALKMAN'
@@ -13,6 +13,6 @@ if mount | grep -q '/Volumes/WALKMAN'
 		if [ $1 ]
 			then
 			       diskutil eject WALKMAN
-			fi	
+			fi
 	else echo Walkman NOT mounted!
 	fi

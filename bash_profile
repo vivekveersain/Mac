@@ -11,7 +11,7 @@ alias python=python3
 alias pip=pip3
 alias walkman="sh /Users/vivekarya/github/Mac/walkman.sh"
 alias speedtest="speedtest-cli --bytes"
-alias update="brew update; brew upgrade; brew cleanup" 
+alias update="brew update; brew upgrade; brew cleanup"
 
 #Custom Commands End
 

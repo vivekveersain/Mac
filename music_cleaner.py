@@ -13,29 +13,38 @@ class Music:
 
     def clean(self, file):
         ext = file.split(".")[-1]
+        fname = file.split("/")[-1]
         path = "/".join(file.split("/")[:-1])
-        f = mutagen.File(file, easy = True)
-        back = f.tags
-        audio = EasyID3(file)
-        unknown = {'title': [u""], 'artist':[u""], 'album':["Single Track"], 'genre':[u""]}
+        audio = mutagen.File(file, easy = True)
+        back = dict(audio.tags)
+        f2 = mutagen.File(file)
+        back2 = dict(f2.tags)
         flag = False
-        for tag in back.keys():
-            if tag in ['title', 'artist', 'album', 'genre']:
-                try: audio[tag] = back[tag][0]
-                except:
-                    audio[tag] = unknown[tag][0]
-                    flag = True
-            else:
-                audio.pop(tag)
+        for value in back.values():
+            if "(" in value[0]: flag  = True
+        for tag in back2:
+            if tag not in ['APIC:FRONT_COVER', 'TPE1', 'TALB', 'TCON', 'TIT2']:
+                print("Edit: ", file, tag, back2[tag])
+                audio = mutagen.File(file)
+                audio.tags.clear()
+                audio.save()
                 flag = True
-        if flag: audio.save()
-        if back.get("genre", [""])[0] == "Archive":
-            path = "/Users/vivekarya/Music/Archive"
-        clean_name = path + "/" + back.get("title", ["Unknown"])[0] + "." + ext
-        if clean_name != file:
+                audio = mutagen.File(file, easy = True)
+                break
+
+        if flag:
+            for tag in ['title', 'artist', 'album', 'genre']:
+                try: audio[tag] = back[tag][0].split("(")[0]
+                except:
+                    if tag == 'album': audio[tag] = ["Single Track"]
+                    else: audio[tag] = [u""]
+            audio.save()
+
+        if back.get("genre", [""])[0] == "Archive": path = "/Users/vivekarya/Music/Archive"
+        clean_name = '/Users/vivekarya/Downloads' + "/" + back.get("title", ["Unknown"])[0] + "." + ext
+        if back.get("title", ["Unknown"])[0]+"."+ext != fname or flag:
             print(file, '->', clean_name)
             os.rename(file, clean_name)
-        elif flag: print("Metadata Edit: %s" % file)
 
     def browser(self, folder):
         List = os.listdir(folder)

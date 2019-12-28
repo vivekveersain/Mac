@@ -34,14 +34,14 @@ class Music:
 
         if flag:
             for tag in ['title', 'artist', 'album', 'genre']:
-                try: audio[tag] = back[tag][0].split("(")[0]
+                try: audio[tag] = back[tag][0].split("(")[0].strip(" ")
                 except:
                     if tag == 'album': audio[tag] = ["Single Track"]
                     else: audio[tag] = [u""]
             audio.save()
 
         if back.get("genre", [""])[0] == "Archive": path = "/Users/vivekarya/Music/Archive"
-        clean_name = '/Users/vivekarya/Downloads' + "/" + back.get("title", ["Unknown"])[0] + "." + ext
+        clean_name = path + "/" + back.get("title", ["Unknown"])[0] + "." + ext
         if back.get("title", ["Unknown"])[0]+"."+ext != fname or flag:
             print(file, '->', clean_name)
             os.rename(file, clean_name)

@@ -11,8 +11,10 @@ alias python=python3
 alias pip=pip3
 alias walkman="sh /Users/vivekarya/github/Mac/walkman.sh"
 alias speedtest="speedtest-cli --bytes"
-alias update="brew update; brew upgrade; brew cleanup"
-
+alias update="brew update; brew upgrade; brew cleanup; brew doctor"
+alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
+alias wget="wget -P ~/Downloads/"
+alias download="aria2c --max-connection-per-server=10 --split=10 --check-integrity=true --dir=Downloads --file-allocation=none --continue=true --summary-interval=0"
 #Custom Commands End
 
 #Bash Completion

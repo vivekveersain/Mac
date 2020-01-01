@@ -6,10 +6,10 @@ do
 	echo ""
 	echo "==> $dir"
 	cd $dir
-	rm .DS_Store
+	rm .DS_Store 2> /dev/null
 	git pull
 	git add .
-	git status
+	#git status
 	git commit -m "Minor Changes!"
 	git push
 	cd ..

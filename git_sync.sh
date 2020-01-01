@@ -3,7 +3,7 @@ cp /Users/vivekarya/.bash_profile /Users/vivekarya/Github/Mac/bash_profile
 
 for dir in */
 do
-	echo $dir
+	echo ==> $dir <==
 	cd $dir
 	rm .DS_Store
 	git pull

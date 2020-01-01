@@ -1,9 +1,16 @@
-#"""
-#@author: Vievk V. Arya [github.com/vivekveersain]
-#"""
-#go to the repository where the files are...
-#and do the following... [next step is to get it done automatically for all repositories]
-git add .
-git status
-git commit -m "Pushing New Developments!"
-git push
+cd /Users/vivekarya/Github/
+cp /Users/vivekarya/.bash_profile /Users/vivekarya/Github/Mac/bash_profile
+
+for dir in */
+do
+	echo $dir
+	cd $dir
+	git add .
+	git status
+	git commit -m "Minor Changes!"
+	git push
+	cd ..
+
+done
+
+cd

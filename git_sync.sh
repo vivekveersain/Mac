@@ -5,6 +5,7 @@ for dir in */
 do
 	echo $dir
 	cd $dir
+	rm .DS_Store
 	git pull
 	git add .
 	git status

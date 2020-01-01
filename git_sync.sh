@@ -1,6 +1,5 @@
-"""
-@author: Vievk V. Arya [github.com/vivekveersain]
-"""
+
+#@author: Vievk V. Arya [github.com/vivekveersain]
 
 cd /Users/vivekarya/Github/
 cp /Users/vivekarya/.bash_profile /Users/vivekarya/Github/Mac/bash_profile

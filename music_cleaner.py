@@ -55,5 +55,5 @@ class Music:
                 if abs_path[-4:].lower() == '.mp3': self.clean(abs_path)
                 else: os.remove(abs_path)
 
-music = Music('~/Music/Music')
+music = Music('/Users/vivekarya/Music/Music')
 music.run()

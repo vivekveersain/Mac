@@ -40,7 +40,7 @@ class Music:
                     else: audio[tag] = [u""]
             audio.save()
 
-        if back.get("genre", [""])[0] == "Archive": path = "~/Music/Archive"
+        if back.get("genre", [""])[0] == "Archive": path = "/Users/vivekarya/Music/Archive"
         clean_name = path + "/" + back.get("title", ["Unknown"])[0] + "." + ext
         if back.get("title", ["Unknown"])[0]+"."+ext != fname or flag:
             print(file, '->', clean_name)

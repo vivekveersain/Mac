@@ -15,7 +15,7 @@ alias update="brew update; brew upgrade; brew cleanup; brew doctor"
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
 alias wget="wget -P ~/Downloads/"
 alias download="aria2c --max-connection-per-server=10 --split=10 --check-integrity=true --dir=Downloads --file-allocation=none --continue=true --summary-interval=0"
-alias github_sync="sh ~/Github/Mac/git_sync.sh"
+alias github="sh ~/Github/Mac/git_sync.sh"
 alias dependencies_brew='brew leaves | xargs brew deps --installed --for-each | sed "s/^.*:/$(tput setaf 4)&$(tput sgr0)/"'
 #Custom Commands End
 

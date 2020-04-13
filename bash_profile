@@ -17,6 +17,7 @@ alias wget="wget -P ~/Downloads/"
 alias download="aria2c --max-connection-per-server=10 --split=10 --check-integrity=true --dir=Downloads --file-allocation=none --continue=true --summary-interval=0"
 alias github_sync="sh ~/Github/Mac/git_sync.sh"
 alias dependencies_brew='brew leaves | xargs brew deps --installed --for-each | sed "s/^.*:/$(tput setaf 4)&$(tput sgr0)/"'
+alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0]; display='%s => %s (%s)' % (data['lastupdatedtime'], data['confirmed'], data['deltaconfirmed']); print(display)\""
 #Custom Commands End
 
 #Bash Completion

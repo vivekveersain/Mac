@@ -10,7 +10,7 @@ do
   source=$(echo $recipe | tr -d "./_" )
   recipe=$(echo $recipe | tr " " "\ " )
   outfile=$news_folder/$source.mobi
-  /Applications/Calibre.app/Contents/MacOS/ebook-convert "$recipe"  "$outfile" --output-profile "kindle" --test
+  /Applications/Calibre.app/Contents/MacOS/ebook-convert "$recipe"  "$outfile" --output-profile "kindle"
   /Applications/Calibre.app/Contents/MacOS/ebook-meta -a "Vivek Arya" "$outfile"
 done
 

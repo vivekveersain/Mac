@@ -25,7 +25,7 @@ zip $news_folder/News.zip $news_folder/*
 
 osascript -e 'display notification "Emailing..." with title "News"'
 echo "E-Mailing..."
-/Applications/Calibre.app/Contents/MacOS/calibre-smtp --relay 'smtp.live.com' --port 587 --username 'vivek.chaudhary@live.com' --password "$pwd" --encryption-method 'TLS' --subject 'News' 'vivek.chaudhary@live.com' 'vivekveersain@kindle.com' 'Enjoy.' -a $news_folder/News.zip
+#/Applications/Calibre.app/Contents/MacOS/calibre-smtp --relay 'smtp.live.com' --port 587 --username 'vivek.chaudhary@live.com' --password "$pwd" --encryption-method 'TLS' --subject 'News' 'vivek.chaudhary@live.com' 'vivekveersain@kindle.com' 'Enjoy.' -a $news_folder/News.zip
 /Applications/Calibre.app/Contents/MacOS/calibre-smtp --subject 'News' 'vivek.chaudhary@live.com' 'vivekveersain@kindle.com' 'Enjoy.' -a $news_folder/News.zip
 osascript -e 'display notification "Cleaning..." with title "News"'
 rm -r $news_folder

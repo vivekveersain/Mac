@@ -21,6 +21,8 @@ do
 done
 wait
 
+osascript -e 'display notification "Zipping..." with title "News"'
+echo "Zipping..."
 zip $news_folder/News.zip $news_folder/*
 
 osascript -e 'display notification "Emailing..." with title "News"'

@@ -10,6 +10,7 @@ alias ll='ls -lGFh'
 alias python=python3
 alias pip=pip3
 alias walkman="sh ~/Github/Mac/walkman.sh"
+alias backup="python ~/Github/Mac/backup.py"
 #alias news="sh ~/Github/Mac/news.sh"
 alias speedtest="speedtest-cli --bytes"
 alias update="brew update; brew upgrade; brew cleanup; brew doctor"

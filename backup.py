@@ -44,9 +44,9 @@ class TimeMachine:
         status = self.check_and_parse()
         self.phase = status.get("BackupPhase", "BackupNotRunning")
         if self.phase == "BackupNotRunning": return
-        elif self.phase == "Copying":
+        elif self.phase == "Copying" or self.phase == "Finishing":
             raw_percent = float(status.get("_raw_Percent", -100))*100
-            TimeRemaining = self._time_conversion(status.get("TimeRemaining", "Calculating"))
+            TimeRemaining = self._time_conversion(status.get(" TimeRemaining", "Calculating"))
             TimeElapsed = self._time_conversion(time.time() - self.start_time)
             processed_data = self.parse_data(int(status.get("bytes", -10)))
             total_data = self.parse_data(int(status.get("totalBytes", -10)))

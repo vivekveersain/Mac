@@ -63,6 +63,7 @@ class TimeMachine:
                                                                     processed_data,
                                                                     total_data)
         elif self.phase == "ThinningPreBackup": line = "Preparing..."
+        elif self.phase == "ThinningPostBackup": line = "Cleaning..."
         else: line = self.phase + '...'
 
         print("\r%s" % line, end = '')

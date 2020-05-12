@@ -27,10 +27,15 @@ alias corona="python -c \"import requests; data=requests.get('https://api.covid1
 #Custom Commands End
 
 #zsh auto completion start
-autoload -Uz compinit promptinit
+autoload -Uz compinit
 compinit
-promptinit
 zstyle ':completion:*' menu select
+# don't use autocompletion for git. it's slow as hell
+compdef -d git
+
+# Get fn+delete working in zsh
+bindkey "^[[3~" delete-char
+
 #zsh auto completion ends
 
 #Bash Completion

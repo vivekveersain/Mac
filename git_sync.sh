@@ -2,7 +2,7 @@
 #@author: Vievk V. Arya [github.com/vivekveersain]
 
 cd /Users/vivekarya/Github/
-cp /Users/vivekarya/.bash_profile /Users/vivekarya/Github/Mac/bash_profile
+cp /Users/vivekarya/.zshrc /Users/vivekarya/Github/Mac/zshrc
 
 for dir in */
 do

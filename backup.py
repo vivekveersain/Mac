@@ -54,7 +54,7 @@ class TimeMachine:
             total_files = status.get("totalFiles", -99)
             self.mount = status.get("DestinationMountPoint", None)
 
-            line = '%s...: %.2f%% %s<%s %s/%s Files, %s/%s' % (self.phase,
+            line = '%s...: %.2f%% %s<%s %s/%s Files []%s/%s]   ' % (self.phase,
                                                                     raw_percent,
                                                                     TimeElapsed,
                                                                     TimeRemaining,

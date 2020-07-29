@@ -24,7 +24,7 @@ alias manage_downloads='aria2p top'
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias github_sync="sh ~/Github/Mac/git_sync.sh"
 alias dependencies_brew='brew leaves | xargs brew deps --installed --for-each | sed "s/^.*:/$(tput setaf 4)&$(tput sgr0)/"'
-alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0]; display='%s => %s (%s)' % (data['lastupdatedtime'], data['confirmed'], data['deltaconfirmed']); print(display)\""
+alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 #Custom Commands End
 
 #zsh auto completion start

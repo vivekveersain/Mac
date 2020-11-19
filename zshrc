@@ -13,13 +13,13 @@ alias walkman="sh ~/Github/Mac/walkman.sh"
 alias backup="python ~/Github/Mac/backup.py"
 #alias news="sh ~/Github/Mac/news.sh"
 alias speedtest="speedtest-cli --bytes"
-alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"
+#alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
-alias wget="wget -P ~/Downloads/"
-alias start_download_manager="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2.conf --download-result=full --enable-rpc=true"
+#alias wget="wget -P ~/Downloads/"
+alias start_download_manager="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2_torrent.conf --download-result=full --enable-rpc=true"
 #alias seed_torrents="sh ~/Github/Mac/start_torrent_client.sh"
 alias stop_download_manager="aria2p call shutdown"
-append_download(){ aria2p call adduri --json-params '[[ '\"$1\"' ], { "dir" : '\"$2\"'}]'; }
+append_torrent(){ aria2p call adduri --json-params '[[ '\"$1\"' ], { "dir" : '\"$2\"'}]'; }
 alias manage_downloads='aria2p top'
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias github_sync="sh ~/Github/Mac/git_sync.sh"

@@ -1,12 +1,12 @@
 import magneturi
 import requests, json
-import os
+import os, time
 
 class Torrent:
     def __init__(self):
         self.pirate_base = "/Volumes/Seagate Backup Plus Drive/Xtras/"
         self.recent_downloads = "Recent Downloads/"
-        self.folders = ["Movies/", "TV Shows/", self.recent_downloads]
+        self.folders = ["Movies/", "TV Shows/"]#, self.recent_downloads]
         self.torrent_folder = self.pirate_base + "Torrent Files/"
         self.torrent_map = {}
         self._search()
@@ -46,6 +46,7 @@ class Torrent:
                 seeds += 1
             except: error += 1
             print("\rSeeds: %d || Errors: %d" % (seeds, error), end = '')
+            time.sleep(30)
         print("")
 
 torrent = Torrent()

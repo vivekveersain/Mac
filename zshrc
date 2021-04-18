@@ -17,7 +17,7 @@ alias speedtest="speedtest-cli --bytes"
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
 #alias wget="wget -P ~/Downloads/"
 torrent_files() {if mount | grep -q '/Volumes/Seagate\ Backup\ Plus\ Drive'; then; cp /Users/vivekarya/Library/Application\ Support/qBittorrent/BT_backup/*.torrent /Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/Torrent\ Files/; echo Backed up : $(ls /Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/Torrent\ Files/ | wc -l); else; echo Drive NOT Mounted!!; fi;}
-alias start_ftp="echo Starting FTP at: $(ipconfig getifaddr en0); python3 -m http.server --directory ./Movies"
+alias start_ftp="echo Starting FTP at: $(ipconfig getifaddr en0); if [[ -d '/Volumes/Seagate Backup Plus Drive/Xtras/' ]] ; then loc='/Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/'; else loc='./Movies/'; fi; python3 -m pyftpdlib --directory=\"$loc\""
 alias pirate_server="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2_torrent.conf --download-result=full --enable-rpc=true"
 alias stop_pirate="aria2p call shutdown"
 #loot(){ aria2p call adduri --json-params '[[ '\"$1\"' ], { "dir" : '\"$2\"'}]'; }

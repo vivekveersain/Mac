@@ -17,15 +17,16 @@ alias speedtest="speedtest-cli --bytes"
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
 #alias wget="wget -P ~/Downloads/"
 torrent_files() {if mount | grep -q '/Volumes/Seagate\ Backup\ Plus\ Drive'; then; cp /Users/vivekarya/Library/Application\ Support/qBittorrent/BT_backup/*.torrent /Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/Torrent\ Files/; echo Backed up : $(ls /Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/Torrent\ Files/ | wc -l); else; echo Drive NOT Mounted!!; fi;}
-alias start_ftp="echo Starting FTP at: $(ipconfig getifaddr en0); if [[ -d '/Volumes/Seagate Backup Plus Drive/Xtras/' ]] ; then loc='/Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/'; else loc='./Movies/'; fi; python3 -m pyftpdlib --directory=\"$loc\""
-alias pirate_server="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2_torrent.conf --download-result=full --enable-rpc=true"
-alias stop_pirate="aria2p call shutdown"
+#alias start_ftp="echo Starting FTP at: $(ipconfig getifaddr en0); if [[ -d '/Volumes/Seagate Backup Plus Drive/Xtras/' ]] ; then loc='/Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/'; else loc='~/Movies/'; fi; python3 -m pyftpdlib --directory=\"$loc\""
+alias start_ftp="echo Starting FTP at: $(ipconfig getifaddr en0); if [[ -d '/Volumes/Seagate Backup Plus Drive/Xtras/' ]] ; then python3 -m pyftpdlib --directory='/Volumes/Seagate\ Backup\ Plus\ Drive/Xtras/'; else python3 -m pyftpdlib --directory='./Movies/'; fi;"
+#alias pirate_server="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2_torrent.conf --download-result=full --enable-rpc=true"
+#alias stop_pirate="aria2p call shutdown"
 #loot(){ aria2p call adduri --json-params '[[ '\"$1\"' ], { "dir" : '\"$2\"'}]'; }
-loot(){ curl http://127.0.0.1:6800/jsonrpc -H "Content-Type: application/json" -H "Accept: application/json" --data '{"jsonrpc": "2.0","id":1, "method": "aria2.addUri", "params":[['\"$1\"'], {"dir":'\"$2\"'}]}'; }
-alias manage_downloads='aria2p top'
+#loot(){ curl http://127.0.0.1:6800/jsonrpc -H "Content-Type: application/json" -H "Accept: application/json" --data '{"jsonrpc": "2.0","id":1, "method": "aria2.addUri", "params":[['\"$1\"'], {"dir":'\"$2\"'}]}'; }
+#alias manage_downloads='aria2p top'
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias github_sync="sh ~/Github/Mac/git_sync.sh"
-alias dependencies_brew='brew leaves | xargs brew deps --installed --for-each | sed "s/^.*:/$(tput setaf 4)&$(tput sgr0)/"'
+alias dependencies_brew='brew leaves | xargs brew deps --for-each | sed "s/^.*:/$(tput setaf 4)&$(tput sgr0)/"'
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 alias ips="cat ~/.ip_list"
 #Custom Commands End

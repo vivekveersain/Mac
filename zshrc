@@ -26,9 +26,11 @@ alias start_ftp="echo Starting FTP at: $(ipconfig getifaddr en0); if [[ -d '/Vol
 #alias manage_downloads='aria2p top'
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias github_sync="sh ~/Github/Mac/git_sync.sh"
-alias dependencies_brew='brew leaves | xargs brew deps --for-each | sed "s/^.*:/$(tput setaf 4)&$(tput sgr0)/"'
+alias dependencies_brew='brew leaves | xargs brew deps --for-each | sed "s/^.*:/$(tput setaf 1)&$(tput sgr0)/"'
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 alias ips="cat ~/.ip_list"
+alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
+alias proxyoff="export http_proxy=''; export https_proxy=''"
 #Custom Commands End
 
 #zsh auto completion start

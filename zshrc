@@ -42,8 +42,8 @@ cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; d
 #Old Commands End
 
 #zsh auto completion start
-autoload -Uz compinit
-compinit
+autoload -Uz compinit 
+compinit -d ${HOME}/.cache/zsh/zcompdump-$ZSH_VERSION
 zstyle ':completion:*' menu select
 # don't use autocompletion for git. it's slow as hell
 compdef -d git

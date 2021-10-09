@@ -33,6 +33,7 @@ alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetu
 alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
 alias proxyoff="export http_proxy=''; export https_proxy=''"
 cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
+alias translate='python Github/Mac/translate.py'
 #Custom Commands End
 
 #Old Commands

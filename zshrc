@@ -23,7 +23,7 @@ alias manage_downloads='aria2p top'
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; git add . ; git reset -- .DS_Store; git commit -m 'Minor Changes!'; git push; cd ..; done; cd;}
 backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
-alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
+alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 
 alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
@@ -34,6 +34,7 @@ alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='
 alias proxyoff="export http_proxy=''; export https_proxy=''"
 cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
 alias translate='python Github/Mac/translate.py'
+alias summary='python Github/Mac/summary.py'
 #Custom Commands End
 
 #Old Commands

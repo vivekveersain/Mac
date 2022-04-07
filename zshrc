@@ -21,7 +21,8 @@ alias stop_download_server="aria2p call shutdown"
 alias manage_downloads='aria2p top'
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; git add . ; git reset -- .DS_Store; git commit -m 'Minor Changes!'; git push; cd ..; done; cd;}
-backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
+#backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
+copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
@@ -38,7 +39,7 @@ alias summary='python Github/Mac/summary.py'
 #Custom Commands End
 
 #Old Commands
-#alias walkman="sh ~/Github/Mac/walkman.sh"
+alias walkman="sh ~/Github/Mac/walkman.sh"
 #alias backup="python ~/Github/Mac/backup.py"
 #alias news="sh ~/Github/Mac/news.sh"
 #alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"

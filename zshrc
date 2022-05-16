@@ -12,7 +12,7 @@ alias pip=pip3
 
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python3 -m pyftpdlib --directory="$loc"'
-whatsmyip() {for line in `(curl -s https://freegeoip.app/json/$1) | tr -d "\"{}" | tr " " "_" | tr "," " "` ; echo $line | sed 's/:/ : /g' | tr "_" " "} 
+whatsmyip() {for line in `(curl -s https://get.geojs.io/v1/ip/geo$1.json) | tr -d "/\"{}" | tr " " "_" | tr "," " "` ; echo $line | sed 's/:/ : /g' | tr "_" " "}
 
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias start_download_server="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2.conf --enable-rpc=true --download-result=full"

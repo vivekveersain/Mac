@@ -12,7 +12,7 @@ alias pip=pip3
 
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python3 -m pyftpdlib --directory="$loc"'
-whatsmyip() {for line in `(curl -s https://freegeoip.app/json/$1) | tr -d "\"{}" | tr " " "_" | tr "," " "` ; echo $line | sed 's/:/ : /g' | tr "_" " "} 
+whatsmyip() {for line in `(curl -s https://get.geojs.io/v1/ip/geo$1.json) | tr -d "/\"{}" | tr " " "_" | tr "," " "` ; echo $line | sed 's/:/ : /g' | tr "_" " "}
 
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias start_download_server="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2.conf --enable-rpc=true --download-result=full"
@@ -21,9 +21,10 @@ alias stop_download_server="aria2p call shutdown"
 alias manage_downloads='aria2p top'
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; git add . ; git reset -- .DS_Store; git commit -m 'Minor Changes!'; git push; cd ..; done; cd;}
-backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
+#backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
+copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
-alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 -f bestaudio --audio-quality 0"
+alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 
 alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
@@ -34,10 +35,11 @@ alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='
 alias proxyoff="export http_proxy=''; export https_proxy=''"
 cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
 alias translate='python Github/Mac/translate.py'
+alias summary='python Github/Mac/summary.py'
 #Custom Commands End
 
 #Old Commands
-#alias walkman="sh ~/Github/Mac/walkman.sh"
+alias walkman="sh ~/Github/Mac/walkman.sh"
 #alias backup="python ~/Github/Mac/backup.py"
 #alias news="sh ~/Github/Mac/news.sh"
 #alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"

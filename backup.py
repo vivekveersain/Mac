@@ -76,4 +76,3 @@ class TimeMachine:
 engine = TimeMachine()
 if engine.backup_disk_exists(): engine.run()
 else: print("Backup disk NOT mounted!")
-#test for new setup

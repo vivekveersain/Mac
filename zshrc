@@ -61,3 +61,4 @@ bindkey "^[[3~" delete-char
 
 #Bash Completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+

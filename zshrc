@@ -1,5 +1,6 @@
 #Terminal Colours Start
-export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
+#export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
+export PROMPT='%F{yellow}%B%~%b%f $ '
 export CLICOLOR=1
 export LSCOLORS=bxfxcxdxAbegedabagacad
 #Terminal Colours End
@@ -9,6 +10,7 @@ alias ls='ls -GFh'
 alias ll='ls -lGFh'
 alias python=python3
 alias pip=pip3
+alias temp='cd ~/Downloads/temp'
 
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python3 -m pyftpdlib --directory="$loc"'

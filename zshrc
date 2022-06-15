@@ -1,6 +1,6 @@
 #Terminal Colours Start
 #export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
-export PROMPT='%F{yellow}%B%~%b%f $ '
+export PROMPT='%F{yellow}%~%f %F{red}$%f '
 export CLICOLOR=1
 export LSCOLORS=bxfxcxdxAbegedabagacad
 #Terminal Colours End
@@ -63,4 +63,3 @@ bindkey "^[[3~" delete-char
 
 #Bash Completion
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
-

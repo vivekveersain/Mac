@@ -48,6 +48,7 @@ alias walkman="sh ~/Github/Mac/walkman.sh"
 #alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"
 #alias wget="wget -P ~/Downloads/"
 #alias dependencies_brew='brew leaves | xargs brew deps --for-each | sed "s/^.*:/$(tput setaf 1)&$(tput sgr0)/"'
+#sudo route add -host whatsmyip.com -interface ppp0
 #Old Commands End
 
 #zsh auto completion start

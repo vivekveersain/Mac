@@ -8,8 +8,8 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 #Custom Commands Start
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
-alias python=python3
-alias pip=pip3
+alias python=/usr/local/bin/python3
+alias pip=/usr/local/bin/pip3
 alias temp='cd ~/Downloads/temp'
 
 alias speedtest="speedtest-cli --bytes"
@@ -29,6 +29,7 @@ alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "
 alias getyoutube="youtube-dl --ffmpeg-location ${HOME}/Github/Mac"
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
+alias torrent_watch='python ~/Github/Scrappers/torrent_watch.py'
 
 alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
 
@@ -37,8 +38,8 @@ alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetu
 alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
 alias proxyoff="export http_proxy=''; export https_proxy=''"
 cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
-alias translate='python Github/Mac/translate.py'
-alias summary='python Github/Mac/summary.py'
+alias translate='python ~/Github/Mac/translate.py'
+alias summary='python ~/Github/Mac/summary.py'i
 tunnel(){sudo route add -host $1 -interface ppp0;}
 #Custom Commands End
 

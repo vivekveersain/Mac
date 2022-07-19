@@ -39,7 +39,7 @@ alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='
 alias proxyoff="export http_proxy=''; export https_proxy=''"
 cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
 alias translate='python ~/Github/Mac/translate.py'
-alias summary='python ~/Github/Mac/summary.py'i
+alias summary='python ~/Github/Mac/summary.py'
 tunnel(){sudo route add -host $1 -interface ppp0;}
 #Custom Commands End
 

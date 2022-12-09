@@ -11,6 +11,7 @@ alias ll='ls -lGFh'
 alias python=/usr/local/bin/python3
 alias pip=/usr/local/bin/pip3
 alias temp='cd ~/Downloads/temp'
+alias notebook='cd ~/Public; jupyter-notebook'
 
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python3 -m pyftpdlib --directory="$loc"'

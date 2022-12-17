@@ -8,8 +8,8 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 #Custom Commands Start
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
-alias python=/usr/local/bin/python3
-alias pip=/usr/local/bin/pip3
+alias python=/usr/local/bin/python3.11
+alias pip='python -m pip'
 alias temp='cd ~/Downloads/temp'
 alias notebook='cd ~/Public; jupyter-notebook'
 

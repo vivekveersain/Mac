@@ -8,7 +8,7 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 #Custom Commands Start
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
-alias python=/usr/local/bin/python3.11
+#alias python=/usr/local/bin/python3.11
 alias pip='python -m pip'
 alias temp='cd ~/Downloads/temp'
 alias notebook='cd ~/Public; jupyter-notebook'
@@ -32,7 +32,7 @@ alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 
 alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 alias torrent_watch='python ~/Github/Scrappers/torrent_watch.py'
 
-alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
+#alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
 
 alias ips="cat ~/.ip_list"
 alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetup -setsocksfirewallproxystate wi-fi on; tor; networksetup -setsocksfirewallproxystate wi-fi off; networksetup -setsocksfirewallproxy wi-fi '' ''; "

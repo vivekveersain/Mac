@@ -1,5 +1,6 @@
 #Terminal Colours Start
-export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
+export PROMPT='%F{yellow}%~%b%f %F{red}$%f '
+#export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
 export CLICOLOR=1
 export LSCOLORS=bxfxcxdxAbegedabagacad
 #Terminal Colours End

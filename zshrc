@@ -8,11 +8,13 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 #Custom Commands Start
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
-alias python=/usr/local/bin/python3.11
-alias pip=/usr/local/bin/pip3
+export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
+alias kandor='ssh ubuntu@3.143.211.99 -i ~/.ssh/kandor/kandor.pem'
+#alias python=/usr/local/bin/python3.11
+#alias pip=/usr/local/bin/pip3
 
 alias speedtest="speedtest-cli --bytes"
-alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python3 -m pyftpdlib --directory="$loc"'
+alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python -m pyftpdlib --directory="$loc"'
 whatsmyip() {for line in `(curl -s https://get.geojs.io/v1/ip/geo$1.json) | tr -d "/\"{}" | tr " " "_" | tr "," " "` ; echo $line | sed 's/:/ : /g' | tr "_" " "}
 
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
@@ -26,9 +28,9 @@ github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Githu
 copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
-alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
+#alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
 
-alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
+#alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
 
 alias ips="cat ~/.ip_list"
 alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetup -setsocksfirewallproxystate wi-fi on; tor; networksetup -setsocksfirewallproxystate wi-fi off; networksetup -setsocksfirewallproxy wi-fi '' ''; "
@@ -40,7 +42,7 @@ alias summary='python Github/Mac/summary.py'
 #Custom Commands End
 
 #Old Commands
-alias walkman="sh ~/Github/Mac/walkman.sh"
+#alias walkman="sh ~/Github/Mac/walkman.sh"
 #alias backup="python ~/Github/Mac/backup.py"
 #alias news="sh ~/Github/Mac/news.sh"
 #alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"

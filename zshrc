@@ -9,7 +9,10 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
-alias kandor='ssh ubuntu@3.143.211.99 -i ~/.ssh/kandor/kandor.pem'
+
+alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99'
+get() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99:$1 ${HOME}/Kandor/Downloads/; fi;}
+#scp -v -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99:/home/ubuntu/writing/Grammar.pkl ./Grammar.pkl
 #alias python=/usr/local/bin/python3.11
 #alias pip=/usr/local/bin/pip3
 

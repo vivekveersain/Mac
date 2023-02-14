@@ -8,6 +8,7 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 #Custom Commands Start
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
+alias gpg='gpg1'
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 
 alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99'
@@ -57,6 +58,10 @@ alias summary='python Github/Mac/summary.py'
 autoload -Uz compinit 
 compinit -d ${HOME}/.cache/zsh/zcompdump-$ZSH_VERSION
 zstyle ':completion:*' menu select
+eval "`pip completion --zsh`"
+zstyle ':completion::complete:*' cache-path ${HOME}/.cache/zsh/.zcompcache/
+HISTFILE=${HOME}/.cache/zsh/zsh_history
+
 # don't use autocompletion for git. it's slow as hell
 compdef -d git
 

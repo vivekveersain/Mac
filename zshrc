@@ -32,9 +32,6 @@ github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Githu
 copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
-#alias corona="python -c \"import requests; data=requests.get('https://api.covid19india.org/data.json').json()['statewise'][0];  tm, confirm, delta = data['lastupdatedtime'], int(data['confirmed']), int(data['deltaconfirmed']); display=f'{tm} => {confirm:,} ({delta:,})'; print(display)\""
-
-#alias mega='rclone about mega: ; rm -rf ${HOME}/Downloads/Mega/.debris/ ; rclone check ${HOME}/Downloads/Mega mega://TheDevil --exclude .DS_Store; rclone copy ${HOME}/Downloads/Mega mega://TheDevil --progress --exclude .DS_Store ; '
 
 alias ips="cat ~/.ip_list"
 alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetup -setsocksfirewallproxystate wi-fi on; tor; networksetup -setsocksfirewallproxystate wi-fi off; networksetup -setsocksfirewallproxy wi-fi '' ''; "
@@ -50,18 +47,17 @@ alias summary='python Github/Mac/summary.py'
 #alias backup="python ~/Github/Mac/backup.py"
 #alias news="sh ~/Github/Mac/news.sh"
 #alias update="brew update; brew upgrade --ignore-pinned; brew cleanup; brew doctor"
-#alias wget="wget -P ~/Downloads/"
-#alias dependencies_brew='brew leaves | xargs brew deps --for-each | sed "s/^.*:/$(tput setaf 1)&$(tput sgr0)/"'
+alias wget="wget -P ~/Downloads/"
 #Old Commands End
 
 #zsh auto completion start
+HISTFILE=${HOME}/.cache/zsh/zsh_history
 autoload -Uz compinit 
 compinit -d ${HOME}/.cache/zsh/zcompdump-$ZSH_VERSION
 zstyle ':completion:*' menu select
 eval "`pip completion --zsh`"
+compdef gpg1=gpg
 zstyle ':completion::complete:*' cache-path ${HOME}/.cache/zsh/.zcompcache/
-HISTFILE=${HOME}/.cache/zsh/zsh_history
-
 # don't use autocompletion for git. it's slow as hell
 compdef -d git
 

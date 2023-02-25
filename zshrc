@@ -11,9 +11,9 @@ alias ll='ls -lGFh'
 alias gpg='gpg1'
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 
-alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99'
+alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@18.219.58.248'
 alias gpu_kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@3.23.115.65'
-get() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99:$1 ${HOME}/Kandor/Downloads/; fi;}
+get() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem $1 ${HOME}/Kandor/Downloads/; fi;}
 #scp -v -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99:/home/ubuntu/writing/Grammar.pkl ./Grammar.pkl
 #alias python=/usr/local/bin/python3.11
 #alias pip=/usr/local/bin/pip3
@@ -41,6 +41,8 @@ alias proxyoff="export http_proxy=''; export https_proxy=''"
 cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
 alias translate='python Github/Mac/translate.py'
 alias summary='python Github/Mac/summary.py'
+alias clean_meta='exiftool -all:all= -r '
+alias list_meta='exiftool -a '
 #Custom Commands End
 
 #Old Commands

@@ -40,7 +40,7 @@ alias ips="cat ~/.ip_list"
 alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetup -setsocksfirewallproxystate wi-fi on; tor; networksetup -setsocksfirewallproxystate wi-fi off; networksetup -setsocksfirewallproxy wi-fi '' ''; "
 alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
 alias proxyoff="export http_proxy=''; export https_proxy=''"
-cache_handler() {for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc; fi; done;}
+cache_handler() {setopt localoptions rmstarsilent; for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc/*; fi; done;}
 alias translate='python Github/Mac/translate.py'
 alias summary='python Github/Mac/summary.py'
 alias clean_meta='exiftool -all:all= -r '

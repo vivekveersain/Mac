@@ -46,6 +46,7 @@ alias translate='python Github/Mac/translate.py'
 alias summary='python Github/Mac/summary.py'
 alias clean_meta='exiftool -all:all= -r '
 alias list_meta='exiftool -a '
+alias tesseract='tesseract -c preserve_interword_spaces=1'
 #Custom Commands End
 
 #Old Commands

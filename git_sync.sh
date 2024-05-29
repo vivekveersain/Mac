@@ -12,7 +12,7 @@ do
 	rm .DS_Store 2> /dev/null
 	git pull
 	git add .
-	git reset -- .DS_Store .gitattributes
+	git reset -- .DS_Store .gitattributes __pycache__
 	#git status
 	git commit -m "Minor Changes!"
 	git push

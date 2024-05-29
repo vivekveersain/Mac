@@ -1,3 +1,7 @@
+#temp settings
+#export OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf
+#temp settings end
+
 #Terminal Colours Start
 export PROMPT='%F{yellow}%~%b%f %F{red}$%f '
 #export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
@@ -9,7 +13,7 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
 alias gpg='gpg1'
-export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
+export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables
 
 alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@52.15.109.241'
 alias gpu_kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@18.118.112.95'

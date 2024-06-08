@@ -36,6 +36,7 @@ alias manage_downloads='aria2p top'
 alias rest='cd Xtra/rest; python cust_table.py; python rest.py; cd;'
 alias rohtak='OPENSSL_CONF=Github/Scrappers/temp_openssl.cnf python Github/Scrappers/all_huda_scrapper.py'
 alias huda25='OPENSSL_CONF=Github/Scrappers/temp_openssl.cnf python Github/Scrappers/huda_scrapper.py'
+alias auctions='python Github/Scrappers/auctions.py'
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; git add . ; git reset -- .DS_Store; git commit -m 'Minor Changes!'; git push; cd ..; done; cd;}
 #backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}

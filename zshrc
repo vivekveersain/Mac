@@ -26,7 +26,7 @@ put() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem $1 ubuntu@13.59.150.56
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python -m pyftpdlib --directory="$loc"'
 #whatsmyip() {for line in `(curl -s https://get.geojs.io/v1/ip/geo$1.json) | tr -d "/\"{}" | tr " " "_" | tr "," " "` ; echo $line | sed 's/:/ : /g' | tr "_" " "}
-whatsmyip() {python -c "import pandas as pd; import requests; print(pd.DataFrame().from_dict({'values' : requests.get('https://ipwhois.app/json/$1').json()}).to_string(header = False))"}
+whatsmyip() {python -c "import pandas as pd; import requests; print(pd.DataFrame().from_dict({'values' : requests.get('https://ipwhois.app/json/$1').json()}).drop(['success', 'continent_code', 'country_code', 'country_flag', 'country_neighbours', 'timezone_dstOffset', 'timezone_gmtOffset', 'currency_plural']).to_string(header = False))"}
 
 alias download="aria2c --conf-path=${HOME}/.config/aria2.conf"
 alias start_download_server="screen -dmS downloader aria2c --conf-path=${HOME}/.config/aria2.conf --enable-rpc=true --download-result=full"
@@ -46,8 +46,8 @@ alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 
 
 alias ips="cat ~/.ip_list"
 alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetup -setsocksfirewallproxystate wi-fi on; tor; networksetup -setsocksfirewallproxystate wi-fi off; networksetup -setsocksfirewallproxy wi-fi '' ''; "
-alias proxyon="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
-alias proxyoff="export http_proxy=''; export https_proxy=''"
+alias proxy="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
+alias noproxy="export http_proxy=''; export https_proxy=''"
 cache_handler() {setopt localoptions rmstarsilent; for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc/*; fi; done;}
 alias translate='python Github/Mac/translate.py'
 alias summary='python Github/Mac/summary.py'

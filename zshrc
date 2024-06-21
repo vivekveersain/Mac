@@ -33,10 +33,15 @@ alias start_download_server="screen -dmS downloader aria2c --conf-path=${HOME}/.
 loot() {if [ $2 ] ; then loc=$2; else loc="${HOME}/Downloads"; fi; curl http://127.0.0.1:6800/jsonrpc -H "Content-Type: application/json" -H "Accept: application/json" --data '{"jsonrpc": "2.0","id":1, "method": "aria2.addUri", "params":[['\"$1\"'], {"dir":'\"$loc\"'}]}'; }
 alias stop_download_server="aria2p call shutdown"
 alias manage_downloads='aria2p top'
+
 alias rest='cd Xtra/rest; python cust_table.py; python rest.py; cd;'
 alias rohtak='OPENSSL_CONF=Github/Scrappers/temp_openssl.cnf python Github/Scrappers/all_huda_scrapper.py'
 alias huda25='OPENSSL_CONF=Github/Scrappers/temp_openssl.cnf python Github/Scrappers/huda_scrapper.py'
 alias auctions='python Github/Scrappers/auctions.py'
+
+alias circuit_check='python Github/Random/check_circuit.py'
+alias natn='cp /usr/local/etc/tor/entry_exit.stock /usr/local/etc/tor/entry_exit; brew services restart tor'
+alias intn='echo "">/usr/local/etc/tor/entry_exit; brew services restart tor'
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; git add . ; git reset -- .DS_Store; git commit -m 'Minor Changes!'; git push; cd ..; done; cd;}
 #backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}

@@ -15,10 +15,12 @@ alias ll='ls -lGFh'
 alias gpg='gpg1'
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables
 
-alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@52.15.109.241'
-alias gpu_kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@18.118.112.95'
-get() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem $1 ${HOME}/Kandor/Downloads/; fi;}
-put() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem $1 ubuntu@13.59.150.56:/home/ubuntu/dev/; fi;}
+alias lan='ssh u0_a154@192.168.1.102 -p 8022'
+put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""; fi; scp -v -P 8022 $1 u0_a154@192.168.1.102:/data/data/com.termux/files/home/$dest; fi;}
+#alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@52.15.109.241'
+#alias gpu_kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@18.118.112.95'
+#get() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem $1 ${HOME}/Kandor/Downloads/; fi;}
+#put() {if [ $1 ]; then scp -v -i ~/.ssh/kandor/kandor.pem $1 ubuntu@13.59.150.56:/home/ubuntu/dev/; fi;}
 #scp -v -i ~/.ssh/kandor/kandor.pem ubuntu@3.143.211.99:/home/ubuntu/writing/Grammar.pkl ./Grammar.pkl
 #alias python=/usr/local/bin/python3.11
 #alias pip=/usr/local/bin/pip3
@@ -42,10 +44,11 @@ alias auctions='python Github/Scrappers/auctions.py'
 alias circuit_check='python Github/Random/check_circuit.py'
 alias natn='cp /usr/local/etc/tor/entry_exit.stock /usr/local/etc/tor/entry_exit; brew services restart tor'
 alias intn='echo "">/usr/local/etc/tor/entry_exit; brew services restart tor'
+#alias clean_tor='rm ${HOME}/Library/Application\ Support/TorBrowser-Data/Tor/state'
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; git add . ; git reset -- .DS_Store; git commit -m 'Minor Changes!'; git push; cd ..; done; cd;}
 #backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
-copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
+copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/$1*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
 alias mp3youtube="youtube-dl --extract-audio --audio-format mp3 --audio-quality 320K --ffmpeg-location ${HOME}/Github/Mac"
 

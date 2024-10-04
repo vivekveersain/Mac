@@ -1,0 +1,54 @@
+pkg install openssh
+passwd
+sshd
+
+##~/.bashrc
+alias ls='ls -GFh'
+alias ll='ls -lGFh'
+alias card='cd ${HOME}/storage/downloads/'
+alias dlna='sh storage/downloads/scripts/xdlna'
+alias torrent='nohup qbittorrent-nox --webui-port=9090 > qbittorrent.logs &'
+
+#give storage read permissions
+termux-setup-storage
+
+
+mkdir ${HOME}/.termux/boot/
+## ~/.termux/boot/sshd-ftp
+#!/data/data/com.termux/files/usr/bin/sh
+termux-wake-lock
+sshd
+nohup python -m pyftpdlib --directory="${HOME}/storage/downloads/" -w > ftp.log &
+
+chmod +x sshd-ftp
+
+pkg update
+pkg upgrade
+pkg install htop
+pkg install python
+pkg install python-lxml
+pkg install termux-api
+pkg install cmake
+pkg install cronie termux-services
+sv-enable crond
+pkg install rsync
+pkg install x11-repo
+pkg install qbittorrent-nox
+
+
+pip install requests
+pip install pyftpdlib
+
+
+#min hr dom month dow cmd
+0,30 * * * * python ~/storage/downloads/scripts/dmer_scraper.py
+0,30 * * * * date>>~/counter.txt
+#; ping -q -c 1 192.168.1.102 >>~/counter.txt
+#5 3-23/3 * * * sh ~/storage/downloads/scripts/wlan_reloader.sh
+0-59/30 * * * * sh ~/storage/downloads/scripts/wlan_reloader.sh
+@reboot sleep 30 && qbittorrent-nox --webui-port=9090;
+@reboot sleep 45 && sh storage/downloads/scripts/xdlna
+
+
+
+termux-open-url https://www.youtube.com/watch?v=z3JTU42tC4E com.android.chrome

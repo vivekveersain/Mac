@@ -24,6 +24,7 @@ except:
 
 flag = False
 try:
+    stack = local_data.get("1", []).copy()
     pinged_data = local_data.get("1", [])
     page = requests.get("https://dmer.haryana.gov.in/", verify=False)
 
@@ -45,6 +46,7 @@ try:
 
 except:
     post("DMER Scrapper", "Some problem in the first pass!")
+    local_data["1"] = stack
 
 try:
     pinged_data = local_data.get("2", 15)

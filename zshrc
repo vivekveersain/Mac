@@ -15,7 +15,7 @@ alias ll='ls -lGFh'
 source ~/.config/extras.conf
 
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables/
-alias lan='ssh u0_a154@192.168.1.102 -p 8022'
+
 put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""; fi; scp -v -P 8022 $1 u0_a154@192.168.1.102:/data/data/com.termux/files/home/$dest; fi;}
 #alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@52.15.109.241'
 #alias gpu_kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@18.118.112.95'

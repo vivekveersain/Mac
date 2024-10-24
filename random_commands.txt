@@ -1,0 +1,1 @@
+for aud in ./*.m4a; do echo $aud ; ffmpeg -loop 1 -i image.jpeg -i $aud -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest $aud.mp4 ;done:

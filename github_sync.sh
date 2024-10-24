@@ -11,8 +11,14 @@ cd "$PARENT_DIR" || { echo "Directory not found: $PARENT_DIR"; exit 1; }
 sync_repo() {
     cd "$1" || return
 
+	# Pull the latest changes from the remote repository
+    echo "Pulling changes for $(basename "$1")..."
+    git pull# origin main  # Change 'main' to your default branch if different
+
     # Check for uncommitted changes
     if [[ -n $(git status --porcelain) ]]; then
+		git reset -- .DS_Store .gitattributes
+		git rm -r __pycache__
         echo "Uncommitted changes found in $(basename "$1"). Committing..."
         git add .
         git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"
@@ -20,10 +26,7 @@ sync_repo() {
         echo "No uncommitted changes in $(basename "$1")."
     fi
 
-    # Pull the latest changes from the remote repository
-    echo "Pulling changes for $(basename "$1")..."
-    git pull origin main  # Change 'main' to your default branch if different
-	cd ..
+    cd ..
 }
 
 # Iterate over each directory in the parent directory

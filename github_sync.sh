@@ -10,6 +10,7 @@ cd "$PARENT_DIR" || { echo "Directory not found: $PARENT_DIR"; exit 1; }
 # Function to commit and pull changes
 sync_repo() {
     cd "$1" || return
+	git clean -fd
 
 	# Pull the latest changes from the remote repository
     echo "\nPulling changes for $(basename "$1")..."

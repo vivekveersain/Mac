@@ -13,7 +13,7 @@ sync_repo() {
 
 	# Pull the latest changes from the remote repository
     echo "Pulling changes for $(basename "$1")..."
-    git pull# origin main  # Change 'main' to your default branch if different
+    git pull #origin main  # Change 'main' to your default branch if different
 
     # Check for uncommitted changes
     if [[ -n $(git status --porcelain) ]]; then

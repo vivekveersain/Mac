@@ -12,7 +12,7 @@ sync_repo() {
     cd "$1" || return
 
 	# Pull the latest changes from the remote repository
-    echo "Pulling changes for $(basename "$1")..."
+    echo "\nPulling changes for $(basename "$1")..."
     git pull #origin main  # Change 'main' to your default branch if different
 
     # Check for uncommitted changes
@@ -38,5 +38,5 @@ for dir in */; do
     fi
 done
 
-echo "Sync complete!"
+echo "Sync complete!!"
 

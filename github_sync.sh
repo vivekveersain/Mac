@@ -22,6 +22,7 @@ sync_repo() {
         echo "Uncommitted changes found in $(basename "$1"). Committing..."
         git add .
         git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"
+		git push
     else
         echo "No uncommitted changes in $(basename "$1")."
     fi

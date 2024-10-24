@@ -40,5 +40,5 @@ for dir in */; do
     fi
 done
 
-echo "Sync complete!!"
+echo "\nSync complete!!"
 

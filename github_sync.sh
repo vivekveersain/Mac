@@ -20,7 +20,7 @@ sync_repo() {
     if [[ -n $(git status --porcelain) ]]; then
 		git add .
 		git reset -- .DS_Store .gitattributes
-		git rm -r __pycache__
+		git rm -r __pycache__ 2>/dev/null
         echo "Uncommitted changes found in $(basename "$1"). Committing..."
         git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"
 		git push

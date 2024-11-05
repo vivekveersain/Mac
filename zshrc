@@ -40,6 +40,8 @@ alias intn='echo "">/usr/local/etc/tor/entry_exit; brew services restart tor'
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git reset -- .DS_Store; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi; cd ..; done; cd;}
 
+push() {rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git reset -- .DS_Store; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi;}
+
 #backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
 
 alias setup_files_sync='scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.termux/files/home/storage/downloads/scripts/ ${HOME}/Github/Mac/; scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.termux/files/home/.bashrc ${HOME}/Github/Mac/scripts/; scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.termux/files/home/.termux/boot/ ${HOME}/Github/Mac/scripts/'

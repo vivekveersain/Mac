@@ -1,0 +1,13 @@
+git remote set-url origin git@github.com:user/Repo.git
+
+git remote -v
+origin  git@github.com:user/Repo.git (fetch)
+origin  git@github.com:user/Repo.git (push)
+
+git push -u origin master
+
+#tesh ssh-auth
+ssh -T git@github.com
+
+
+

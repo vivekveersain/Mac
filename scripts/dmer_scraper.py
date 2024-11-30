@@ -4,10 +4,12 @@ import pickle
 import time
 
 import os
-os.chdir(os.path.expanduser("~") + "/storage/downloads/scripts/")
+#os.chdir(os.path.expanduser("~") + "/storage/downloads/scripts/")
 local_data_file = "dmer_scraper.pkl"
 
 def post(title, data, priority = "default", tags = "", link = None):
+    print(title, data, priority , tags , link )
+    return
     headers = {"Title": title, "Priority": priority}
     if tags: headers.update({"Tags": tags})
     if link: headers.update({ "Click": link}) #"Attach": link,
@@ -82,8 +84,8 @@ try:
             time.sleep(1)
 
     if flag: local_data["2"] = pinged_data
-except:
-    post("DMER Scrapper", "Some problem in the second pass!")
+except Exception as e:
+    post("DMER Scrapper", "Some problem in the second pass!\n%s \n %s" % (e, e.__doc__))
 
 
 if flag:

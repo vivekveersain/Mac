@@ -15,6 +15,7 @@ alias ll='ls -lGFh'
 source ~/.config/extras.conf
 
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables/
+export GIT_CONFIG=~/.config/git/.gitconfig
 
 put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""; fi; scp -v -P 8022 $1 u0_a154@192.168.1.102:/data/data/com.termux/files/home/$dest; fi;}
 #alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@52.15.109.241'
@@ -38,7 +39,7 @@ alias natn='cp /usr/local/etc/tor/entry_exit.stock /usr/local/etc/tor/entry_exit
 alias intn='echo "">/usr/local/etc/tor/entry_exit; brew services restart tor'
 #alias clean_tor='rm ${HOME}/Library/Application\ Support/TorBrowser-Data/Tor/state'
 
-github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git reset -- .DS_Store; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi; cd ..; done; cd;}
+github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi; cd ..; done; cd;}
 
 push() {rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git reset -- .DS_Store; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi;}
 

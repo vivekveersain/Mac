@@ -1,1 +1,1 @@
-nohup rclone serve dlna ${HOME}/storage/downloads/ --read-only --addr :8080 -L --name "dlna" --vfs-cache-mode full --vfs-fast-fingerprint --no-modtime --no-checksum > xdlna.logs &
+nohup rclone serve dlna ${HOME}/storage/external-1/ --read-only --addr :8080 -L --name "dlna" --vfs-cache-mode full --vfs-fast-fingerprint --no-modtime --no-checksum > xdlna.logs &

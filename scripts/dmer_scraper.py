@@ -4,7 +4,7 @@ import pickle
 import time
 
 import os
-#os.chdir(os.path.expanduser("~") + "/storage/downloads/scripts/")
+os.chdir(os.path.expanduser("~") + "/storage/downloads/scripts/")
 local_data_file = "dmer_scraper.pkl"
 
 def post(title, data, priority = "default", tags = "", link = None):
@@ -23,7 +23,7 @@ except:
     local_data = {}
 
 flag = False
-if True:#try:
+try:
     stack = local_data.get("1", []).copy()
     pinged_data = local_data.get("1", [])
     page = requests.get("https://dmer.haryana.gov.in/", verify=False)
@@ -44,7 +44,7 @@ if True:#try:
         if flag: 
             local_data["1"] = pinged_data
 
-else: #except:
+except:
     post("DMER Scrapper", "Some problem in the first pass!")
     local_data["1"] = stack
 

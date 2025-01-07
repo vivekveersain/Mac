@@ -17,8 +17,6 @@ source ~/.config/extras.conf
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables/
 
 put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""; fi; scp -v -P 8022 $1 u0_a154@192.168.1.102:/data/data/com.termux/files/home/$dest; fi;}
-#alias kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@52.15.109.241'
-#alias gpu_kandor='ssh -i ~/.ssh/kandor/kandor.pem ubuntu@18.118.112.95'
 
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python -m pyftpdlib --directory="$loc"'

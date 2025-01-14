@@ -27,22 +27,22 @@ try:
     stack = local_data.get("1", []).copy()
     pinged_data = local_data.get("1", [])
     page = requests.get("https://dmer.haryana.gov.in/", verify=False)
+    if page.ok:
+        tree = html.fromstring(page.text)
+        table = tree.xpath( "/html/body/section[3]/div/div/div[2]/div/div[1]/div/div/ul/li")
 
-    tree = html.fromstring(page.text)
-    table = tree.xpath( "/html/body/section[3]/div/div/div[2]/div/div[1]/div/div/ul/li")
-
-    for row in table[::-1]:
-        element = row.findall(".//a")[0]
-        date = row.findall(".//td[1]")[0].text_content().encode('latin-1', errors='ignore').decode()
-        text = element.text.encode('latin-1', errors='ignore').decode()
-        link = element.attrib["href"].encode('latin-1', errors='ignore').decode()
-        unq = "> ".join([date, text, link])
-        if unq not in pinged_data:
-            flag = True
-            post(date + "> " + text, text + "\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link, priority="high")
-            pinged_data = [unq] + pinged_data
-        if flag: 
-            local_data["1"] = pinged_data
+        for row in table[::-1]:
+            element = row.findall(".//a")[0]
+            date = row.findall(".//td[1]")[0].text_content().encode('latin-1', errors='ignore').decode()
+            text = element.text.encode('latin-1', errors='ignore').decode()
+            link = element.attrib["href"].encode('latin-1', errors='ignore').decode()
+            unq = "> ".join([date, text, link])
+            if unq not in pinged_data:
+                flag = True
+                post(date + "> " + text, text + "\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link, priority="high")
+                pinged_data = [unq] + pinged_data
+            if flag: 
+                local_data["1"] = pinged_data
 
 except:
     post("DMER Scrapper", "Some problem in the first pass!")
@@ -69,19 +69,22 @@ try:
                             },
                             cookies={},
                             auth=(),
-                        ).json()
+                        )
+    
+    if data.ok:
+        data = data.json()
 
-    for row in data["body"]["notice"][::-1]:
-        if row["id"] > pinged_data:
-            flag = True
-            pinged_data = row["id"]
-            title = row["publishDate"].encode('latin-1', errors='ignore').decode() + "> " + row["subject"].encode('latin-1', errors='ignore').decode()
-            body = row["content"].encode('latin-1', errors='ignore').decode() + "\n\n" + str(row)
-            link = row["extension"].encode('latin-1', errors='ignore').decode()
-            post(title, body + "\n\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link, priority="high")
-            time.sleep(1)
+        for row in data["body"]["notice"][::-1]:
+            if row["id"] > pinged_data:
+                flag = True
+                pinged_data = row["id"]
+                title = row["publishDate"].encode('latin-1', errors='ignore').decode() + "> " + row["subject"].encode('latin-1', errors='ignore').decode()
+                body = row["content"].encode('latin-1', errors='ignore').decode() + "\n\n" + str(row)
+                link = row["extension"].encode('latin-1', errors='ignore').decode()
+                post(title, body + "\n\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link, priority="high")
+                time.sleep(1)
 
-    if flag: local_data["2"] = pinged_data
+        if flag: local_data["2"] = pinged_data
 except Exception as e:
     post("DMER Scrapper", "Some problem in the second pass!\n%s \n %s" % (e, e.__doc__))
 

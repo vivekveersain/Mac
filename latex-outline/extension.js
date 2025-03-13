@@ -31,6 +31,9 @@ function activate(context) {
         const captionRegex = /\\caption\{([^}]+)\}/;
         const endEnvRegex = /\\end\{(figure|figure\*|table|table\*)\}/;
 
+        // New regex to detect bibliography
+        const bibliographyRegex = /\\bibliography\{[^}]+\}/;
+
         let insideTitlePage = false;
         let insideFigureOrTable = false;
         let currentFigureOrTable = null;
@@ -39,6 +42,20 @@ function activate(context) {
           let line = lines[lineNum].trim();
 
           if (line.startsWith("%")) continue;
+
+          // Detect \bibliography{...} and add "References" to outline
+          if (bibliographyRegex.test(line)) {
+            const position = new vscode.Position(lineNum, 0);
+            const symbol = new vscode.DocumentSymbol(
+              "References",
+              "chapter",
+              vscode.SymbolKind.Class,
+              new vscode.Range(position, position),
+              new vscode.Range(position, position)
+            );
+            symbols.push(symbol);
+            continue;
+          }
 
           // Handle \appendix
           if (line === "\\appendix") {
@@ -159,7 +176,6 @@ function activate(context) {
             }
           }
 
-          // Detect \captionsetup{type=figure} when no figure block is open
           if (/\\captionsetup\{type=figure\}/.test(line)) {
             pendingFigure = true;
             pendingFigurePosition = new vscode.Position(lineNum, 0);
@@ -183,7 +199,6 @@ function activate(context) {
             if (insideFigureOrTable) {
               currentFigureOrTable.title = captionText;
             } else if (pendingFigure) {
-              // If captionsetup was detected but no figure environment is open
               const symbol = new vscode.DocumentSymbol(
                 captionText,
                 "Figure",
@@ -215,7 +230,7 @@ function activate(context) {
                 : vscode.SymbolKind.Struct;
 
             const symbol = new vscode.DocumentSymbol(
-              currentFigureOrTable.title || " ", // Empty name for unnamed tables
+              currentFigureOrTable.title || " ",
               currentFigureOrTable.type,
               kind,
               new vscode.Range(currentFigureOrTable.position, currentFigureOrTable.position),
@@ -243,3 +258,4 @@ function activate(context) {
 function deactivate() {}
 
 module.exports = { activate, deactivate };
+

@@ -3,7 +3,7 @@
   "displayName": "LaTeX Outline",
   "description": "Provides an outline for LaTeX files",
   "version": "0.0.1",
-  "publisher": "yourname",
+  "publisher": "vivekarya",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -16,21 +16,7 @@
         "id": "latex",
         "extensions": [".tex"]
       }
-    ],
-    "commands": [
-      {
-        "command": "latex-outline.refresh",
-        "title": "Refresh LaTeX Outline"
-      }
-    ],
-    "views": {
-      "explorer": [
-        {
-          "id": "latexOutline",
-          "name": "LaTeX Outline"
-        }
-      ]
-    }
+    ]
   }
 }
 

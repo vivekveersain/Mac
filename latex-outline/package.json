@@ -17,6 +17,11 @@
         "extensions": [".tex"]
       }
     ]
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
   }
 }
 

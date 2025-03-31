@@ -55,8 +55,9 @@ alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetu
 alias proxy="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
 alias noproxy="export http_proxy=''; export https_proxy=''"
 cache_handler() {setopt localoptions rmstarsilent; for loc in "${HOME}/Library/Caches/" "${HOME}/Library/Logs/"; do; du -sh $loc; if [ $1 ]; then rm -rf $loc/*; fi; done;}
-alias translate='python Github/Mac/translate.py'
-alias summary='python Github/Mac/summary.py'
+alias translate='python ~/Github/Mac/translate.py'
+alias summary='python ~/Github/Mac/summary.py'
+alias convert='sh ~/Github/Mac/convert.sh'
 #alias tesseract='tesseract -c preserve_interword_spaces=1'
 #Custom Commands End
 

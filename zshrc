@@ -59,6 +59,8 @@ alias translate='python ~/Github/Mac/translate.py'
 alias summary='python ~/Github/Mac/summary.py'
 alias convert='sh ~/Github/Mac/convert.sh'
 #alias tesseract='tesseract -c preserve_interword_spaces=1'
+alias texlive24='export PATH=/usr/local/texlive/2024basic/bin/universal-darwin:$PATH'
+alias texlive25='export PATH=/usr/local/texlive/2025basic/bin/universal-darwin:$PATH'
 #Custom Commands End
 
 #Old Commands

@@ -37,6 +37,11 @@ function activate(context) {
         const unnamedTableRegex = /\\begin\{table\}(?![\s\S]*?\\begin\{table\}[\s\S]*?\\end\{table\})/;
         const titleRegex = /\\title\{([^}]+)\}/; // 📌 Added regex for \title{}
 
+        // 📌 Clean LaTeX commands from the title
+        function cleanLatexTitle(title) {
+          return title.replace(/\\[a-zA-Z]+\{[^}]*\}/g, '').replace(/\\[a-zA-Z]+/g, '').trim();
+        }
+
         // 🔄 Process the document line by line
         for (let lineNum = 0; lineNum < lines.length; lineNum++) {
           let line = lines[lineNum].trim();
@@ -157,7 +162,10 @@ function activate(context) {
           let sectionMatch = sectionRegex.exec(line);
           if (sectionMatch) {
             const sectionType = sectionMatch[1];
-            const title = sectionMatch[3];
+            let title = sectionMatch[3];
+
+            // Clean LaTeX commands like \centering from the title
+            title = cleanLatexTitle(title);
 
             const kind = {
               part: vscode.SymbolKind.Enum,
@@ -169,7 +177,7 @@ function activate(context) {
 
             const position = new vscode.Position(lineNum, sectionMatch.index);
             const symbol = new vscode.DocumentSymbol(
-              title,
+              title,  // Cleaned title
               sectionType,
               kind,
               new vscode.Range(position, position),

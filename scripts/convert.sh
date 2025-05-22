@@ -1,5 +1,5 @@
 cd "../Shared/"
-
+#mkdir -e output
 for file in *.mp3; do
   base_name="${file%.mp3}"
   output_file="output/${base_name}.mp4"

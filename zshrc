@@ -27,11 +27,12 @@ download() { curl "${1}" -o ${HOME}/Downloads/$(basename "${1}") -L --progress-b
 #screen -dmS downloader cmd
 
 #alias rest='cd Xtra/rest; python cust_table.py; python rest.py; cd;'
-alias rohtak='OPENSSL_CONF=Github/Scrappers/temp_openssl.cnf python Github/Scrappers/all_huda_scrapper.py'
-alias huda25='OPENSSL_CONF=Github/Scrappers/temp_openssl.cnf python Github/Scrappers/huda_scrapper.py'
-alias auctions='python Github/Scrappers/auctions.py'
+alias rohtak='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/all_huda_scrapper.py'
+alias huda25='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/huda_scrapper.py'
+alias auctions='python ~/Github/Scrappers/auctions.py'
+alias reroute='sh ~/Github/Mac/routing.sh'
 
-alias circuit_check='python Github/Random/check_circuit.py'
+alias circuit_check='python ~/Github/Random/check_circuit.py'
 alias natn='cp /usr/local/etc/tor/entry_exit.stock /usr/local/etc/tor/entry_exit; brew services restart tor'
 alias intn='echo "">/usr/local/etc/tor/entry_exit; brew services restart tor'
 #alias clean_tor='rm ${HOME}/Library/Application\ Support/TorBrowser-Data/Tor/state'

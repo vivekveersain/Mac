@@ -7,7 +7,7 @@ OUTPUT_DIR=~/Downloads/converted
 mkdir -p "$OUTPUT_DIR"
 
 # Convert images to .jpg
-for img in "$DOWNLOADS_DIR"/*.webp; do
+for img in "$DOWNLOADS_DIR"/*.{webp,heic,HEIC}; do
     if [[ -f "$img" ]]; then
         filename=$(basename -- "$img")
         extension="${filename##*.}"
@@ -19,7 +19,7 @@ for img in "$DOWNLOADS_DIR"/*.webp; do
 done
 
 # Convert videos to .mp4
-for vid in "$DOWNLOADS_DIR"/*.{mp4,webm}; do
+for vid in "$DOWNLOADS_DIR"/*.{mp4,webm,mov}; do
     if [[ -f "$vid" ]]; then
         filename=$(basename -- "$vid")
         extension="${filename##*.}"

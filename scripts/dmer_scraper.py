@@ -16,6 +16,12 @@ def post(title, data, priority = "default", tags = "", link = None):
         data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
         headers=headers)
 
+def reset_for_new_yr():
+    with open(local_data_file, "rb") as f: local_data = pickle.load(f)
+    local_data["2"] = 0
+    with open(local_data_file, "wb") as f: pickle.dump(local_data, f)
+
+
 try:
     with open(local_data_file, "rb") as f: local_data = pickle.load(f)
 except:
@@ -44,8 +50,8 @@ try:
             if flag: 
                 local_data["1"] = pinged_data
 
-except:
-    post("DMER Scrapper", "Some problem in the first pass!")
+except Exception as e:
+    # post("DMER Scrapper", "Some problem in the first pass!\n%s \n %s" % (e, e.__doc__))
     local_data["1"] = stack
 
 try:

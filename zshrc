@@ -13,8 +13,9 @@ export LSCOLORS=bxfxcxdxAbegedabagacad
 alias ls='ls -GFh'
 alias ll='ls -lGFh'
 source ~/.config/extras.conf
+source ~/.config/keys.env
 
-export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables/
+export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables/:~/Xtra/executables/node/bin
 
 put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""; fi; scp -v -P 8022 $1 u0_a154@192.168.1.102:/data/data/com.termux/files/home/$dest; fi;}
 
@@ -31,11 +32,15 @@ alias rohtak='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/S
 alias huda25='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/huda_scrapper.py'
 alias auctions='python ~/Github/Scrappers/auctions.py'
 alias reroute='sh ~/Github/Mac/routing.sh'
+alias gpt='python ~/Github/Mac/gpt.py'
+alias ai='cn --config ~/.continue/config.yaml'
 
 alias circuit_check='python ~/Github/Random/check_circuit.py'
 alias natn='cp /usr/local/etc/tor/entry_exit.stock /usr/local/etc/tor/entry_exit; brew services restart tor'
 alias intn='echo "">/usr/local/etc/tor/entry_exit; brew services restart tor'
 #alias clean_tor='rm ${HOME}/Library/Application\ Support/TorBrowser-Data/Tor/state'
+ip6(){ IFS=. read -r a b c d <<<"$1"; printf "http://[::ffff:%x:%x]\n" $((a*256+b)) $((c*256+d)); }
+search() { [[ "$2" == "-d" ]] && find / -name "*$1*" -print0 2>/dev/null | xargs -0 rm -rf || find / -name "*$1*" 2>/dev/null; }
 
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi; cd ..; done; cd;}
 

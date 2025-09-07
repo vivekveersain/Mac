@@ -24,7 +24,12 @@ for vid in "$DOWNLOADS_DIR"/*.{mp4,webm,mov}; do
         filename=$(basename -- "$vid")
         extension="${filename##*.}"
         filename="${filename%.*}"
-        ffmpeg -i "$vid" "$OUTPUT_DIR/${filename}.mp4" -y
+        ffmpeg -i "$vid" \
+            -vf "scale='if(gt(iw,480),iw,480)':'if(gt(ih,480),ih,480)'" \
+            -pix_fmt yuv420p \
+            -c:v h264_videotoolbox \
+            -b:v 5M \
+            "$OUTPUT_DIR/${filename}.mp4" -y
         echo "Converted: $vid -> ${filename}.mp4"
         rm "$vid"
     fi

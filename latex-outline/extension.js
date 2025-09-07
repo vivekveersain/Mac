@@ -11,6 +11,7 @@ function activate(context) {
           section: null,
           subsection: null,
           subsubsection: null,
+          annexture: null,
           figure: null,
           table: null,
         };
@@ -23,7 +24,7 @@ function activate(context) {
         const lines = text.split("\n");
 
         // 📌 Regular Expressions
-        const sectionRegex = /\\(part|chapter|section|subsection|subsubsection)(\*)?\{([^}]+)\}/;
+        const sectionRegex = /\\(part|chapter|section|subsection|subsubsection|annexture)(\*)?\{([^}]+)\}/;
         const appendixRegex = /\\appendix/;
         const tocRegex = /\\tableofcontents/;
         const lotRegex = /\\listoftables/;
@@ -46,7 +47,7 @@ function activate(context) {
         for (let lineNum = 0; lineNum < lines.length; lineNum++) {
           let line = lines[lineNum].trim();
           if (line.startsWith("%")) continue;
-          
+
           // 📌 Detect \title{}
           let titleMatch = titleRegex.exec(line);
           if (titleMatch) {
@@ -173,6 +174,7 @@ function activate(context) {
               section: vscode.SymbolKind.Constant,
               subsection: vscode.SymbolKind.Interface,
               subsubsection: vscode.SymbolKind.String,
+              annexture: vscode.SymbolKind.Interface,
             }[sectionType];
 
             const position = new vscode.Position(lineNum, sectionMatch.index);
@@ -198,6 +200,9 @@ function activate(context) {
               parents.subsection = symbol;
             } else if (sectionType === "subsubsection") {
               if (parents.subsection) parents.subsection.children.push(symbol);
+              else symbols.push(symbol);
+            } else if (sectionType === "annexture") {
+              if (parents.section) parents.section.children.push(symbol);
               else symbols.push(symbol);
             }
 
@@ -234,31 +239,31 @@ function activate(context) {
 
             // Scan forward to find \end{table} and check for \captionsetup{type=table}
             for (let i = lineNum; i < lines.length; i++) {
-                if (lines[i].includes("\\captionsetup{type=table}")) {
-                    containsCaptionsetup = true;
-                }
-                if (lines[i].includes("\\end{table}")) {
-                    tableEndLine = i;
-                    break;
-                }
+              if (lines[i].includes("\\captionsetup{type=table}")) {
+                containsCaptionsetup = true;
+              }
+              if (lines[i].includes("\\end{table}")) {
+                tableEndLine = i;
+                break;
+              }
             }
 
             // ✅ Only mark it as an "Unnamed Table" if it DOES NOT contain \captionsetup{type=table}
             if (!containsCaptionsetup) {
-                const position = new vscode.Position(tableStartLine, 0);
-                const tableSymbol = new vscode.DocumentSymbol(
-                    " ",
-                    "Table ",
-                    vscode.SymbolKind.Struct,
-                    new vscode.Range(position, new vscode.Position(tableEndLine, 0)),
-                    new vscode.Range(position, position)
-                );
+              const position = new vscode.Position(tableStartLine, 0);
+              const tableSymbol = new vscode.DocumentSymbol(
+                " ",
+                "Table ",
+                vscode.SymbolKind.Struct,
+                new vscode.Range(position, new vscode.Position(tableEndLine, 0)),
+                new vscode.Range(position, position)
+              );
 
-                if (lastParent) {
-                    lastParent.children.push(tableSymbol);
-                } else {
-                    symbols.push(tableSymbol);
-                }
+              if (lastParent) {
+                lastParent.children.push(tableSymbol);
+              } else {
+                symbols.push(tableSymbol);
+              }
             }
 
             continue;
@@ -306,6 +311,6 @@ function activate(context) {
   context.subscriptions.push(provider);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = { activate, deactivate };

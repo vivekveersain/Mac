@@ -43,9 +43,10 @@ function activate(context) {
           return title.replace(/\\[a-zA-Z]+\{[^}]*\}/g, '').replace(/\\[a-zA-Z]+/g, '').trim();
         }
 
-        // --- For Figure/Table stateful detection ---
-        let insideFigure = false, figureStartLine = 0, figureCaption = null;
-        let insideTable = false, tableStartLine = 0, tableCaption = null;
+        // --- New: For Figure detection ---
+        let insideFigure = false;
+        let figureStartLine = 0;
+        let figureCaption = null;
 
         // 🔄 Process the document line by line
         for (let lineNum = 0; lineNum < lines.length; lineNum++) {
@@ -252,44 +253,7 @@ function activate(context) {
           }
           // -------------------------------
 
-          // -------------------------------
-          // 📦 Standard Table Environment
-          // -------------------------------
-          if (line.startsWith("\\begin{table")) {
-            insideTable = true;
-            tableStartLine = lineNum;
-            tableCaption = null;
-            continue;
-          }
-
-          if (insideTable) {
-            let tableCaptionMatch = captionRegex.exec(line);
-            if (tableCaptionMatch) {
-              tableCaption = tableCaptionMatch[1];
-            }
-            if (line.startsWith("\\end{table}")) {
-              const position = new vscode.Position(tableStartLine, 0);
-              const endPosition = new vscode.Position(lineNum, 0);
-              const symbol = new vscode.DocumentSymbol(
-                tableCaption ? tableCaption : "Table",
-                "Table",
-                vscode.SymbolKind.Struct,
-                new vscode.Range(position, endPosition),
-                new vscode.Range(position, position)
-              );
-
-              let parent = parents.subsection || parents.section || parents.chapter;
-              if (parent) parent.children.push(symbol);
-              else symbols.push(symbol);
-
-              insideTable = false;
-              tableCaption = null;
-            }
-            continue; // Skip other processing while inside table
-          }
-          // -------------------------------
-
-          // 📊 Named Table Detection (legacy/captionsetup style)
+          // 📊 Named Table Detection
           if (captionSetupTableRegex.test(line)) {
             const position = new vscode.Position(lineNum, 0);
             const tableSymbol = new vscode.DocumentSymbol(
@@ -308,7 +272,7 @@ function activate(context) {
             continue;
           }
 
-          // 🔍 Detect Unnamed Tables (legacy/heuristic)
+          // 🔍 Detect Unnamed Tables
           if (unnamedTableRegex.test(line)) {
             const tableStartLine = lineNum;
             let tableEndLine = lineNum;

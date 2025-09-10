@@ -1,0 +1,27 @@
+{
+  "name": "latex-outline",
+  "displayName": "LaTeX Outline",
+  "description": "Provides an outline for LaTeX files",
+  "version": "0.0.1",
+  "publisher": "vivekarya",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onLanguage:latex"],
+  "main": "extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "latex",
+        "extensions": [".tex"]
+      }
+    ]
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  }
+}
+

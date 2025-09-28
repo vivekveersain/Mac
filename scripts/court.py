@@ -186,11 +186,15 @@ if True:
         # print(cino)
         next_action = local_data[cino]["next_action"]
         if next_action <= today:
-            try: message, master_dict = court_case(cino)
-            except: continue
+            try: 
+                message, master_dict = court_case(cino)
+            except: 
+                print("Some Error")
+                continue
+            print(cino, next_action)
             next_action, new_orders = next_action_logic(master_dict, local_data[cino]["posts"])
             if new_orders: post_updates(master_dict)
-            
+            print(next_action)
             local_data[cino]["next_action"] = next_action
             local_data[cino]["posts"] += new_orders
     if local_data != old_copy:

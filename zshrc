@@ -53,7 +53,8 @@ alias setup_files_sync='scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.t
 copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/$1*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
-alias mp3youtube="yt-dlp --extract-audio --audio-quality 320K --audio-format mp3 -P ${HOME}/Downloads"
+#alias mp3youtube="yt-dlp --extract-audio --audio-quality 320K --audio-format mp3 -P ${HOME}/Downloads"
+alias mp3youtube="yt-dlp -f bestaudio --extract-audio --audio-format mp3 --audio-quality 0 --postprocessor-args \"-ar 44100 -ac 2 -ab 320k\""
 alias devices='for no in {101..120}; do;if ping -c 1 -t 1 192.168.1.$no > /dev/null ; then arp 192.168.1.$no; fi ; done;'
 alias ips="cat ~/.ip_list"
 alias vpn="networksetup -setsocksfirewallproxy wi-fi 127.0.0.1 9050; networksetup -setsocksfirewallproxystate wi-fi on; tor; networksetup -setsocksfirewallproxystate wi-fi off; networksetup -setsocksfirewallproxy wi-fi '' ''; "

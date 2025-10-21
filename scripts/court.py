@@ -1,9 +1,10 @@
-from lxml import html
+import time
 import requests
 from datetime import date
 import pickle
 import copy
 import os
+from lxml import html
 
 local_data = {"HRJRA00000892025" : {"posts": [], "next_action":""},
               "HRJRA00000232025" : {"posts": [], "next_action":""},
@@ -13,6 +14,8 @@ local_data = {"HRJRA00000892025" : {"posts": [], "next_action":""},
 HOME = os.environ.get("HOME")
 DATA_DIR = f"{HOME}/data/"
 FILE = "court.pkl"
+
+# print(HOME, DATA_DIR, FILE)
 
 def post(title, data, priority = "default", tags = "", link = None):
     headers = {"Title": title, "Priority": priority}
@@ -183,18 +186,18 @@ old_copy = copy.deepcopy(local_data)
 
 if True:
     for cino in local_data.keys():
-        # print(cino)
         next_action = local_data[cino]["next_action"]
+        #print(cino, next_action)
         if next_action <= today:
             try: 
                 message, master_dict = court_case(cino)
             except: 
                 print("Some Error")
                 continue
-            print(cino, next_action)
+            #print(cino, next_action)
             next_action, new_orders = next_action_logic(master_dict, local_data[cino]["posts"])
             if new_orders: post_updates(master_dict)
-            print(next_action)
+            #print(next_action)
             local_data[cino]["next_action"] = next_action
             local_data[cino]["posts"] += new_orders
     if local_data != old_copy:

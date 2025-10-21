@@ -2,11 +2,13 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 import os
 import pickle
+import time
 
 from lxml import html
+
 import requests
 
-DUMP_DIR = "/data/data/com.termux/files/home/storage/external-1/Data/HSVP/"
+DUMP_DIR = "/home/vabarya/data/hsvp/"
 TODAY=str(date.today())
 
 #TODAY="2025-09-02"
@@ -205,6 +207,7 @@ def fetch(pool, city, sector, limit_proposal = 100, suff_list = [""]):
 
     total = len(plots)
     r = 0
+    start = time.time()
 
     batches = pool.map(master, plots)
     for lines, master_details in batches:
@@ -212,7 +215,8 @@ def fetch(pool, city, sector, limit_proposal = 100, suff_list = [""]):
             temp_stack.append(line)
             list_of_dicts.append(master_details_dict)
         r += 1
-        print("\r%s / %s > %d/%d" % (city, sector, r, total), end = "")
+        elapsed = int(time.time() - start)
+        print("\r%s / %s > %d/%d in %02d:%02d:%02d" % (city, sector, r, total, elapsed // 3600, (elapsed % 3600) // 60, elapsed % 60), end = "")
     print("")
 
     if len(list_of_dicts) == 0:
@@ -373,11 +377,10 @@ def compare(city, sector):
     if changes: dump(today, city, sector, latest_data)
     comp_master(city, sector, latest_data, last_data)
 
-
 if __name__ == '__main__':
     if error_check(): print("Site Not reachable!")
     else:
-        core_count = 8
+        core_count = 1
         master_dict = {"25": (750, [""])
                             , "27-28-26PI": (1600, ["G", ""])
                             , "27-28-26PII": (200, ["F", ""])
@@ -386,6 +389,7 @@ if __name__ == '__main__':
                             , "1": (3000, [""])
                             , "2P": (2250, [""])}
         #master_dict = {"25": (50*0,[""])}
+        #master_dict = {}
 
         pool = ThreadPoolExecutor(max_workers=core_count)
         for sector in master_dict.keys():

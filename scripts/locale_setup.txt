@@ -1,0 +1,32 @@
+sudo nano /etc/environment
+
+====
+LANG="en_IN.UTF-8"
+LC_CTYPE="en_IN.UTF-8"
+LC_NUMERIC="en_IN.UTF-8"
+LC_TIME="en_IN.UTF-8"
+LC_COLLATE="en_IN.UTF-8"
+LC_MONETARY="en_IN.UTF-8"
+LC_MESSAGES="en_IN.UTF-8"
+LC_PAPER="en_IN.UTF-8"
+LC_NAME="en_IN.UTF-8"
+LC_ADDRESS="en_IN.UTF-8"
+LC_TELEPHONE="en_IN.UTF-8"
+LC_MEASUREMENT="en_IN.UTF-8"
+LC_IDENTIFICATION="en_IN.UTF-8"
+====
+
+sudo locale-gen
+
+
+sudo nano /etc/locale.conf
+
+====
+LANG=en_IN
+====
+
+
+sudo nano /etc/locale.gen
+===
+make sure the right locale in uncommented
+===

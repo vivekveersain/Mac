@@ -1,0 +1,7 @@
+mkdir -p ~/.virtualenvs
+python3 -m venv ~/.virtualenvs/master
+
+sudo ln -s ~/.virtualenvs/master/bin/python /usr/local/bin/python
+sudo ln -s ~/.virtualenvs/master/bin/python3 /usr/local/bin/python3
+sudo ln -s ~/.virtualenvs/master/bin/pip /usr/local/bin/pip
+sudo ln -s ~/.virtualenvs/master/bin/pip3 /usr/local/bin/pip3

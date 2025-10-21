@@ -1,0 +1,14 @@
+[Unit]
+Description=Vital Temperature Monitoring Script
+
+[Service]
+ExecStart=/bin/bash /home/vabarya/scripts/vital_monitor.sh
+User=vabarya
+Group=vabarya
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=vital_monitor
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

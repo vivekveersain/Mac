@@ -1,33 +1,67 @@
-#!/bin/sh
+#!/bin/bash
 
 send_ntfy() {
     message="$1"
     curl -s -d "$message" https://ntfy.sh/kaptaan_network >/dev/null
 }
 
+filter_logs_since() {
+    last_run_time="$1"
+    log_file="${HOME}/logs/network.log"
+    latest_timestamp=$last_run_time
+    r=0
+    stack=""
+
+    # Read the log file and filter the lines
+    while IFS= read -r line; do
+        if [[ ! "$line" =~ ^[0-9]{4}\.[0-9]{2}\.[0-9]{2} ]]; then
+            continue
+        fi
+
+        timestamp=$(echo "$line" | awk '{print $1 " " $2}')
+        
+        if [[ "$timestamp" > "$last_run_time" ]]; then
+            line_no_mac=$(echo "$line" | sed 's/\(.*\) [^ ]*$/\1/')
+            stack+="$line_no_mac"$'\n' 
+            r=$((r + 1))
+        fi
+    done < "$log_file"
+
+    if [[ -n "$stack" ]]; then
+        temp_str=$(vcgencmd measure_temp)
+        temp=$(echo $temp_str | grep -oP '\d+\.\d+')
+        send_ntfy "$stack $temp°C"
+    fi
+
+    # Return the latest timestamp (which will be stored in last_run_time)
+    latest_timestamp=$(date "+%Y.%m.%d %H:%M:%S")
+    echo $latest_timestamp
+}
+
 SUBNET="192.168.1"
 START=101
 END=120
-
 known_devices=""
-
 SKIPS="a4lexiP
 norueN
 ijatiP
 404-a4lexiP
-sgniP-norueN"
+sgniP-norueN
+enohPi
+daPi"
 
-MAC_FILE=".ips"
+MAC_FILE="${HOME}/.ips"
 last_md5=""
+last_run_time=$(date -d "-3000 seconds" "+%Y.%m.%d %H:%M:%S")
 
 echo "Starting ARP monitor with MAC lookup. Press Ctrl+C to stop."
 
 first_run=1
 
-while true; do
-    # printf "\rScanning...\033[K"
-    all_msgs=""
+# Start the initial timestamp for the next run of `filter_logs_since`
+next_run_time=$(date -d "+300 seconds" "+%Y.%m.%d %H:%M:%S")
 
+while true; do
     current_devices=""
 
     # Check if MACS was modified
@@ -36,7 +70,6 @@ while true; do
         if [ "$md5" != "$last_md5" ]; then
             MAC_NAMES=$(cat "$MAC_FILE")
             last_md5="$md5"
-            printf "Reloaded!\n"
         fi
     fi
 
@@ -73,7 +106,7 @@ EOF
         ip=$(echo "$line" | awk '{print $1}')
         mac=$(echo "$line" | awk '{print $2}')
         if ! echo "$known_devices" | grep -q "^$ip "; then
-            ping -c 1 -W 1 $ip >/dev/null 2>&1
+            # ping -c 1 -W 1 $ip >/dev/null 2>&1
 
             # Lookup MAC name
             name="$mac"
@@ -87,13 +120,11 @@ EOF
 
             timestamp=$(date "+%Y.%m.%d %H:%M:%S")
             msg="$timestamp >> $ip $name"
-            printf "\r\033[K%s %s\n" "$msg" "$mac"
+            printf "%s %s\n" "$msg" "$mac"
 
             if echo "$SKIPS" | grep -Fxq "$name"; then
                 continue   # skips this iteration
             fi
-            send_ntfy "$msg"
-
         fi
     done
 
@@ -116,11 +147,10 @@ EOF
             if ! echo "$current_devices" | grep -q "^$ip "; then
                 timestamp=$(date "+%Y.%m.%d %H:%M:%S")
                 msg="$timestamp << $ip $name"
-                printf "\r\033[K%s %s\n" "$msg" "$mac"
+                printf "%s %s\n" "$msg" "$mac"
                 if echo "$SKIPS" | grep -Fxq "$name"; then
                     continue   # skips this iteration
                 fi
-                send_ntfy "$msg"
             fi
         done
     fi
@@ -128,12 +158,15 @@ EOF
     known_devices="$current_devices"
     first_run=0
 
-    # Sleep 2 minutes with interactive countdown
-    sleep_seconds=10
-    while [ $sleep_seconds -gt 0 ]; do
-        # printf "\rSleeping %ds…\033[K" $sleep_seconds
-        sleep 1
-        sleep_seconds=$((sleep_seconds - 1))
-    done
-    printf "\r"
+    # Check if it's time to run `filter_logs_since`
+    current_time=$(date "+%Y.%m.%d %H:%M:%S")
+    if [[ "$current_time" > "$next_run_time" ]]; then
+        # Run the function and update last_run_time
+        last_run_time=$(filter_logs_since "$last_run_time")
+
+        # Calculate next run time (add 300 seconds)
+        next_run_time=$(date -d "+1800 seconds" "+%Y.%m.%d %H:%M:%S")
+    fi
+
+    # Continue without sleeping, just looping
 done

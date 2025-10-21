@@ -1,0 +1,14 @@
+[Unit]
+Description=qBittorrent Headless Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/qbittorrent-nox
+User=vabarya
+Group=vabarya
+Restart=on-failure
+Environment=HOME=/home/vabarya
+WorkingDirectory=/home/vabarya
+
+[Install]
+WantedBy=multi-user.target

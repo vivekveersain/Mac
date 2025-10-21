@@ -1,0 +1,28 @@
+on boot
+
+
+sudo nano /etc/systemd/system/network_monitor.service
+
+
+===================
+[Unit]
+Description=Network Monitor Script
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/vabarya/scripts/network.sh
+Restart=on-failure
+User=vabarya
+Group=vabarya
+StandardOutput=append:/home/vabarya/logs/network.log
+StandardError=append:/home/vabarya/logs/network.log
+Environment=LOGFILE=/home/vabarya/logs/network.log
+
+[Install]
+WantedBy=multi-user.target
+==================
+
+sudo systemctl daemon-reload
+sudo systemctl restart network_monitor.service
+sudo systemctl enable network_monitor.service

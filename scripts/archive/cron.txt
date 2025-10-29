@@ -1,0 +1,11 @@
+# Set environment variable for the cron job
+PATH=/home/vabarya/.virtualenvs/master/bin:$PATH
+
+# m h  dom mon dow   command
+0 */6 * * * python /home/vabarya/scripts/court.py >> /home/vabarya/logs/court.log 2>&1
+*/5 * * * * python /home/vabarya/scripts/dmer_scraper.py
+30 18 * * * python /home/vabarya/scripts/hsvp.py >> /home/vabarya/logs/hsvp.log 2>&1
+15 * * * * /bin/bash /home/vabarya/scripts/ip.sh >> /home/vabarya/logs/ip.log 2>&1
+55 * * * * python /home/vabarya/scripts/aqi.py >> /home/vabarya/logs/aqi.log 2>&1
+* * * * * if [ "$( /bin/ls /home/vabarya/data/Shared/*.torrent 2>/dev/null )" ]; then /usr/bin/sudo /bin/systemctl start qbittorrent-nox@vabarya.service; fi
+0 1 * * * sudo reboot

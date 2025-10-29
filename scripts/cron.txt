@@ -1,7 +1,0 @@
-#
-# Set environment variable for the cron job
-PATH=/home/vabarya/.virtualenvs/master/bin:$PATH
-
-# m h  dom mon dow   command
-0 */6 * * * python /home/vabarya/scripts/court.py >> /home/vabarya/logs/court.log
-*/5 * * * * python /home/vabarya/scripts/dmer_scraper.py

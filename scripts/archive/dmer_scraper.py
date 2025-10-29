@@ -5,11 +5,9 @@ import time
 
 import os
 os.chdir(os.path.expanduser("~") + "/scripts/")
-local_data_file = os.path.expanduser("~") + "/data/dmer_scraper.pkl"
+local_data_file = "/home/vabarya/data/dmer_scraper.pkl"
 
 def post(title, data, priority = "default", tags = "", link = None):
-    title = title.replace("\r", "").replace("\t", "").replace("\n", "")
-    data = data.replace("\r", "").replace("\t", "")
     headers = {"Title": title, "Priority": priority}
     if tags: headers.update({"Tags": tags})
     if link: headers.update({ "Click": link}) #"Attach": link,
@@ -53,13 +51,10 @@ try:
                 local_data["1"] = pinged_data
                 #with open("last_run.txt", "a") as f: f.write(str(1) + "\n")
 except Exception as e:
-    # print(e, e.__doc__)
     # post("DMER Scrapper", "Some problem in the first pass!\n%s \n %s" % (e, e.__doc__))
     # local_data["1"] = stack
     pass
 
-print(local_data)
-print(len(local_data["1"]), local_data["2"])
 try:
     pinged_data = local_data.get("2", 15)
 
@@ -102,12 +97,10 @@ try:
             #     f.write(temp + "\n")
             local_data["2"] = pinged_data
 except Exception as e:
-    #post("DMER Scrapper", "Some problem in the second pass!\n%s \n %s" % (e, e.__doc__))
-    pass
+    post("DMER Scrapper", "Some problem in the second pass!\n%s \n %s" % (e, e.__doc__))
 
 if flag:
     with open(local_data_file, "wb") as f: pickle.dump(local_data, f)
 
-print(len(local_data["1"]), local_data["2"])
 #post("Run complete", "Done!!!")
 #with open("last_run.txt", "a") as f: f.write(str(local_data) + "\n")

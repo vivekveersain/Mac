@@ -1,0 +1,1 @@
+* * * * * if [ "$( /bin/ls /home/vabarya/data/Shared/*.torrent 2>/dev/null )" ]; then /usr/bin/sudo /bin/systemctl start qbittorrent-nox@vabarya.service >> /home/vabarya/test.txt 2>&1; else echo "No .torrent files found." >> /home/vabarya/test.txt; fi

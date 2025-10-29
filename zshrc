@@ -30,6 +30,7 @@ download() { curl "${1}" -o ${HOME}/Downloads/$(basename "${1}") -L --progress-b
 #alias rest='cd Xtra/rest; python cust_table.py; python rest.py; cd;'
 alias rohtak='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/all_huda_scrapper.py'
 alias huda25='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/huda_scrapper.py'
+alias hsvp="python Github/Scrappers/hsvp_appender.py"
 alias auctions='python ~/Github/Scrappers/auctions.py'
 alias reroute='sh ~/Github/Mac/routing.sh'
 alias gpt='python ~/Github/Mac/gpt.py'

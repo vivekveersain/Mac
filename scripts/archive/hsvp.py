@@ -229,38 +229,12 @@ def fetch(pool, city, sector, limit_proposal = 100, suff_list = [""]):
     except: pass
     return list_of_dicts
 
-def clean_files(folder_path):
-    # Read the last pull date from the file
-    try:
-        with open(DUMP_DIR+"pull.txt") as f:
-            last_pull = f.read().strip()
-
-        # List all files in the folder
-        files = os.listdir(folder_path)
-        latest_file = max([r for r in files if r[-4:] == ".pkl"])
-
-        # Loop through each file and check its date
-        for file in files:
-            if file == latest_file: continue
-            # Check if the filename ends with '.pkl' and follows the expected 'YYYY-MM-DD.pkl' format
-            if file.endswith(".pkl"):
-                # Extract the date portion of the filename (assumes format 'YYYY-MM-DD.pkl')
-                file_date_str = file.split('.')[0]
-                
-                # Compare the file date string with last_pull date string
-                if file_date_str < last_pull:
-                    file_path = os.path.join(folder_path, file)
-                    os.remove(file_path)
-    except: pass
-
-
 def dump(today, city, sector, list_of_dicts):
     folder_path=DUMP_DIR+city+"/"+sector+"/"
     os.makedirs(folder_path, exist_ok=True)
     file_name = folder_path + str(today) + ".pkl"
     with open(file_name, "wb") as file:
         pickle.dump(list_of_dicts, file)
-    clean_files(folder_path)
     return True
 
 def error_check():

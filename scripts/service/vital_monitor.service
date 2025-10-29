@@ -1,5 +1,5 @@
 [Unit]
-Description=Vital Temperature Monitoring Script
+Description=Vital Monitoring Script
 
 [Service]
 ExecStart=/bin/bash /home/vabarya/scripts/vital_monitor.sh

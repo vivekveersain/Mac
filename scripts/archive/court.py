@@ -8,8 +8,7 @@ from lxml import html
 
 local_data = {"HRJRA00000892025" : {"posts": [], "next_action":""},
               "HRJRA00000232025" : {"posts": [], "next_action":""},
-              "HRJRA00007332024" : {"posts": [], "next_action":""},
-              "HRPP020019482025" : {"posts": [], "next_action":""}
+              "HRJRA00007332024" : {"posts": [], "next_action":""}
               }
 
 HOME = os.environ.get("HOME")
@@ -188,7 +187,7 @@ old_copy = copy.deepcopy(local_data)
 if True:
     for cino in local_data.keys():
         next_action = local_data[cino]["next_action"]
-        print(cino, next_action)
+        #print(cino, next_action)
         if next_action <= today:
             try: 
                 message, master_dict = court_case(cino)

@@ -116,8 +116,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Custom commands
-whatsmyip() { python -c "import pandas as pd, requests; ip_data = requests.get('https://ipwhois.app/json/$1').json(); df = pd.DataFrame.from_d>
-alias proxy="export http_proxy='socks5://127.0.0.1:9050'; export https_proxy='socks5://127.0.0.1:9050'"
-alias noproxy="export http_proxy=''; export https_proxy=''"
-alias vitals="echo \$(vcgencmd measure_temp | sed 's/temp=\([0-9.]*\)'\''C/\1°C/') \$(grep -oP 'Temp: \[\K[^\]]+' /tmp/vitals/data.txt | sed '>
+# adding python path
+export PATH=$HOME/.virtualenvs/master/bin:$PATH
+
+#Custom Commands
+alias load_data="echo \$(date; \$(vcgencmd measure_temp | sed 's/temp=\([0-9.]*\)'\''C/\1°C/') \$(grep -oP 'Temp: \K.*' /tmp/vitals/data.txt)"
+alias vitals='watch -n 1 -t bash -i -c "load_data"'
+alias devices='python scripts/devices.py'
+whatsmyip() { python -c "import pandas as pd, requests; data = requests.get(f'https://ipwhois.app/json/$1').json(); print(pd.DataFrame().from_dict({'values': data}).drop(['success', 'continent_code', 'country_code', 'country_flag', 'country_neighbours', 'timezone_dstOffset', 'timezone_gmtOffset', 'currency_plural']).to_string(header=False))"; }

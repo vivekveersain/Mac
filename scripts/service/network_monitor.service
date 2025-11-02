@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /home/vabarya/scripts/network.sh
+ExecStart=/home/vabarya/.virtualenvs/master/bin/python /home/vabarya/scripts/network.py
 Restart=on-failure
 User=vabarya
 Group=vabarya
@@ -14,4 +14,3 @@ Environment=LOGFILE=/home/vabarya/logs/network.log
 
 [Install]
 WantedBy=multi-user.target
-

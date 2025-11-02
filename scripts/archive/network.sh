@@ -89,8 +89,7 @@ while true; do
                 if [ -z "$current_devices" ]; then
                     current_devices="$ip $mac"
                 else
-                    current_devices="$current_devices
-$ip $mac"
+                    current_devices="$current_devices $ip $mac"
                 fi
                 ;;
         esac

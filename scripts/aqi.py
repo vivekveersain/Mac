@@ -3,12 +3,6 @@ from datetime import datetime
 import base64
 import json
 
-# Create a datetime object
-dt = datetime(2025, 10, 24, 0, 0, 0)
-
-# Convert to the desired format
-formatted_date = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-
 # Function to initialize a session and set cookies
 def create_session():
     session = requests.Session()
@@ -126,6 +120,39 @@ def post(title, data, priority = "default", tags = "", link = None):
         data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
         headers=headers)
 
+def AI_AQI(city):
+    url = f'https://www.iqair.com/search-results.data?q={city}&filter=aqi&_routes=routes%2F%24%28locale%29.search-results'
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:144.0) Gecko/20100101 Firefox/144.0',
+        'Accept': '*/*',
+        'Accept-Language': 'en-GB,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Referer': 'https://www.iqair.com/india/haryana/',
+        'sentry-trace': '5fbf047d4468407e95b8af4cc051a029-8da055d92fbd9559-0',
+        'baggage': 'sentry-environment=production,sentry-release=896f861151b432d53a63f5fdf2dab5a3f8b99ec0,sentry-public_key=8e3aea2ba071c511ad8e9f1d0b91dd04,sentry-trace_id=5fbf047d4468407e95b8af4cc051a029,sentry-sample_rate=0.05,sentry-transaction=routes%2F%24,sentry-sampled=false',
+        'DNT': '1',
+        'Sec-GPC': '1',
+        'Connection': 'keep-alive',
+        'Cookie': 'aws-waf-token=1159f3cf-5e16-4f7e-982d-3299d9e0e0f5:BQoAhLsq4kGhAQAA:5Huxrqo3McVdIS8hcZ2bIh4RTieKa9M/k5iaG27mTDO5E+xbXl44udLSc3jWY8+T3t021XyuEbiK/okiZkQz1UuRetQokT5YkzHLk+DPoKWFSHmehmkyxxl158KcKsbAKy9Fr7umsPdDaRkYzkmh3mhUOrDaK5VLC64/gLs8lcQfPA/U8PykZQysAT8lpS+m+cy1OebWaPhg8lL3rZK1xg==; _shopify_y=33c58b11-927B-422D-F96C-5B7E312AD467; _shopify_s=33c58b12-04AF-4E51-E4CD-B683DE47902A; dismissedCountryBanner=true',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-origin',
+        'Priority': 'u=0',
+        'TE': 'trailers'
+    }
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    return f"{data[36]} -> {data[26]}"
+
+def AI():
+    out = ""
+    for city in ["jhajjar", "rohtak", "bahadurgarh"]:
+        try: out += AI_AQI(city) + "\n"
+        except: pass
+    return out
+
 # Example usage
 if __name__ == "__main__":
     # Define the URL for the API
@@ -157,7 +184,7 @@ if __name__ == "__main__":
                 }
 
     # Define a message variable to accumulate data
-    message = ""
+    message = AI() + "\n"
 
     # Define the body data (Base64 encoded)
     for loc, loc_data in locations.items():

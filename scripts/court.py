@@ -188,7 +188,7 @@ old_copy = copy.deepcopy(local_data)
 if True:
     for cino in local_data.keys():
         next_action = local_data[cino]["next_action"]
-        print(cino, next_action)
+        # print(cino, next_action)
         if next_action <= today:
             try: 
                 message, master_dict = court_case(cino)

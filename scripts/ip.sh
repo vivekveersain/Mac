@@ -5,7 +5,7 @@ export PATH=$PATH:/usr/bin
 
 # Define the file paths
 ip_file="${HOME}/data/ip/ip.txt"
-ip_log_file="${HOME}/data/ip/ip_ts.txt"
+ip_log_file="${HOME}/data/ip/ts.txt"
 
 # Get the current IP
 current_ip=$(curl -s https://ipwhois.app/json/ | grep -o '"ip":"[^"]*' | sed 's/"ip":"//')

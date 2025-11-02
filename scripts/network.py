@@ -12,7 +12,7 @@ MD5_HASH = ""
 MACS = {}
 IP_TAGS = {}
 
-known_devices = []
+known_devices = set()
 start_time = time.time() - 1750
 PING_STACK = []
 
@@ -47,8 +47,13 @@ def investigate(arp_output, known_devices):
     return new_devices, lost_devices, current_devices
 
 def postman(PING_STACK):
-    if ping_stack:
-        message = "\n".join([" ".join(row[:-1]) for row in ping_stack])
+    if PING_STACK:
+        try:
+            vcgencmd_output = subprocess.check_output(["vcgencmd", "measure_temp"])
+            degree = vcgencmd_output.decode().strip().replace("temp=", "").replace("'C", "°C")
+        except: degree = ""
+
+        message = "\n".join([" ".join(row[:-1]) for row in PING_STACK]) + "\n\n" + degree
         url = "https://ntfy.sh/kaptaan_network"
         requests.post(url, data=message.encode("utf-8"), timeout=10)
 

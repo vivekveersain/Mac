@@ -46,8 +46,46 @@ def investigate(arp_output, known_devices):
     lost_devices = known_devices - current_devices
     return new_devices, lost_devices, current_devices
 
+def filter_ping_stack(ping_stack, threshold_seconds=45):
+    def parse_time(ts):
+        return datetime.strptime(ts, "%Y.%m.%d %H:%M:%S")
+
+    filtered = []
+    skip_indices = set()
+    last_leave = {}
+
+    for i, row in enumerate(ping_stack):
+        ts_str, direction, ip, name, mac = row
+        ts = parse_time(ts_str)
+
+        if direction == '>>': #Exit
+            last_leave[mac] = (ts, i)
+            filtered.append(row)
+        elif direction == '<<':
+            if mac in last_leave:
+                leave_ts, leave_idx = last_leave[mac]
+                delta = (ts - leave_ts).total_seconds()
+                if 0 < delta <= threshold_seconds:
+                    # Remove leave and skip enter
+                    skip_indices.add(leave_idx)
+                    last_leave.pop(mac)
+                    continue  # Skip this enter row
+                else:
+                    filtered.append(row)
+                    last_leave.pop(mac)
+            else:
+                filtered.append(row)
+        else:
+            filtered.append(row)
+
+    # Remove leave entries marked for skipping
+    filtered_final = [row for idx, row in enumerate(filtered) if idx not in skip_indices]
+
+    return filtered_final
+
 def postman(PING_STACK):
     if PING_STACK:
+        PING_STACK = filter_ping_stack(PING_STACK)
         try:
             vcgencmd_output = subprocess.check_output(["vcgencmd", "measure_temp"])
             degree = vcgencmd_output.decode().strip().replace("temp=", "").replace("'C", "°C")
@@ -69,16 +107,18 @@ while True:
     new_devices, lost_devices, known_devices = investigate(arp_output, known_devices)
 
     for device in new_devices:
-        print(formatted_datetime, ">>", arp_output[device], MACS.get(device, device), device)
-        row = [formatted_datetime, ">>", arp_output[device], MACS.get(device, device), device]
+        print(formatted_datetime, "<<", arp_output[device], MACS.get(device, device), device)
+        row = [formatted_datetime, "<<", arp_output[device], MACS.get(device, device), device]
         IP_TAGS[device] = arp_output[device]
         PING_STACK.append(row)
     for device in lost_devices:
-        print(formatted_datetime, "<<", IP_TAGS[device], MACS.get(device, device), device)
-        row = [formatted_datetime, "<<", IP_TAGS[device], MACS.get(device, device), device]
+        print(formatted_datetime, ">>", IP_TAGS[device], MACS.get(device, device), device)
+        row = [formatted_datetime, ">>", IP_TAGS[device], MACS.get(device, device), device]
         PING_STACK.append(row)
 
     if time.time() - start_time > 1800:
-        postman(PING_STACK)
-        start_time = time.time()
-        PING_STACK = []
+        try:
+            postman(PING_STACK)
+            start_time = time.time()
+            PING_STACK = []
+        except: start_time += 120

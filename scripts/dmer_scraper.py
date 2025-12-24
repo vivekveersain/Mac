@@ -47,7 +47,7 @@ try:
             unq = "> ".join([date, text, link])
             if unq not in pinged_data:
                 flag = True
-                post(date + "> " + text, text + "\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link, priority="high")
+                post(date + "> " + text, text + "\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link) #, priority="high")
                 pinged_data = [unq] + pinged_data
             if flag: 
                 local_data["1"] = pinged_data
@@ -93,7 +93,7 @@ try:
                 title = row["publishDate"].encode('latin-1', errors='ignore').decode() + "> " + row["subject"].encode('latin-1', errors='ignore').decode()
                 body = row["content"].encode('latin-1', errors='ignore').decode() + "\n\n" + str(row)
                 link = row["extension"].encode('latin-1', errors='ignore').decode()
-                post(title, body + "\n\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link, priority="high")
+                post(title, body + "\n\n" + link + "\n\n"  + "https://dmer.haryana.gov.in/", link = link) #, priority="high")
                 time.sleep(1)
 
         if flag: 

@@ -21,6 +21,7 @@ put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""
 
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python -m pyftpdlib --directory="$loc"'
+alias youtube="yt-dlp -f bestvideo+bestaudio"
 
 whatsmyip() {python -c "import pandas as pd; import requests; print(pd.DataFrame().from_dict({'values' : requests.get('https://ipwhois.app/json/$1').json()}).drop(['success', 'continent_code', 'country_code', 'country_flag', 'country_neighbours', 'timezone_dstOffset', 'timezone_gmtOffset', 'currency_plural']).to_string(header = False))"}
 
@@ -30,8 +31,9 @@ download() { curl "${1}" -o ${HOME}/Downloads/$(basename "${1}") -L --progress-b
 #alias rest='cd Xtra/rest; python cust_table.py; python rest.py; cd;'
 alias rohtak='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/all_huda_scrapper.py'
 alias huda25='OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf python ~/Github/Scrappers/huda_scrapper.py'
-alias hsvp="python Github/Scrappers/hsvp_appender.py"
+alias hsvp="python ~/Github/Scrappers/hsvp_appender.py"
 alias auctions='python ~/Github/Scrappers/auctions.py'
+alias pvt_auctions='python ~/Github/Scrappers/pvt_hsvp.py'
 alias reroute='sh ~/Github/Mac/routing.sh'
 alias gpt='python ~/Github/Mac/gpt.py'
 alias ai='cn --config ~/.continue/config.yaml'

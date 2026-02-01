@@ -93,7 +93,8 @@ def postman(PING_STACK):
 
         message = "\n".join([" ".join(row[:-1]) for row in PING_STACK]) + "\n\n" + degree
         url = "https://ntfy.sh/kaptaan_network"
-        requests.post(url, data=message.encode("utf-8"), timeout=10)
+        headers = {"Title": datetime.now().strftime("%Y.%m.%d %H:%M:%S")}
+        requests.post(url, data=message.encode("utf-8"), timeout=10, headers = headers)
 
 while True:
     MACS, MD5_HASH = load_mac_names(MD5_HASH)
@@ -116,7 +117,7 @@ while True:
         row = [formatted_datetime, ">>", IP_TAGS[device], MACS.get(device, device), device]
         PING_STACK.append(row)
 
-    if time.time() - start_time > 1800:
+    if time.time() - start_time > 1800*4:
         try:
             postman(PING_STACK)
             start_time = time.time()

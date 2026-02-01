@@ -7,7 +7,7 @@ def get_otp(secret):
         try:
             totp = pyotp.TOTP(secret).now()
             remaining = 30 - int(time.time()) % 30
-            print("%s %s [%d] " % (totp[:3], totp[3:], remaining), end = "\r")
+            print("%s %s - %s [%d] " % (totp[:3], totp[3:], totp, remaining), end = "\r")
             time.sleep(1)
         except: break
 

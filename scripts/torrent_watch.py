@@ -7,7 +7,8 @@ import time
 
 pd.set_option('display.float_format', '{:.2f}'.format)
 
-def search(name, min_size = 1, min_seeds = 30, skip = [], must = []):
+def search(name, must = [], skip = [], min_size = 1, min_seeds = 30 ):
+    print(name, must, skip, min_size, min_seeds)
     low_q = ["CAM", "HDTS", "HD.TS", "HD-TS", "HD TS", "900MB", "DVDSCR", "HDRIP", "DVDRIP", "HDTV", "HD.TV", "HD-TV"
     ,"1600MB", "HD TV"] + skip
     results = requests.get('https://apibay.org/q.php',params={'q':name})
@@ -55,8 +56,12 @@ def master(targets):
         # notify("Torrent Watch!", "Run Complete")
 
 targets = {
-          #"120 Bahadur" : [],
-          "Ikkis" : [1, 30, [], ["2026"]],
-          "Border 2" : [1, 30, ["Hunters"], ["2026"]],
+          "Subedaar" : [],
+          "Ikkis" : [["2026"]],
+          "Border 2" : [["2026"], ["Hunters"]],
+          "The Odyssey": [["2026"]],
+          "The Social Reckoning": [],
+          "Jumanji": [["2026"]],
+          "Avengers: Doomsday": [["2026"]],
           }
 master(targets)

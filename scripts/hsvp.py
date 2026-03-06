@@ -320,6 +320,7 @@ def post(title, data, priority = "default", tags = "", link = None):
     requests.post("https://ntfy.sh/kaptaan_jack_sparrow_real_estate",
         data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
         headers=headers)
+    print(data)
     
 def pull_unavailable_entries_from_history(latest_data, last_data):
     changes = False
@@ -350,7 +351,7 @@ def comp_master(city, sector, latest_data, last_data):
         yesterday_entry = yesterday_lookup.get(plot_id)
         if not yesterday_entry:
             #print(f"New plot added: {plot_id}")
-            stacker += f"\n\nNew plot added: {plot_id} {today_entry['Allottee Name']} {today_entry['Sub Category']}"
+            stacker += f"\n\nLOI: {plot_id} {today_entry['Allottee Name']} @ {int(today_entry['FullyPaid'])/0.9}"
             continue
 
         if sector not in ["1", "25"]: continue
@@ -409,14 +410,14 @@ if __name__ == '__main__':
     if error_check(): print("Site Not reachable!")
     else:
         core_count = 2
-        master_dict = {"25": (750, [""])
+        master_dict = {"25": (761, [""])
                             , "27-28-26PI": (1600, ["G", ""])
                             , "27-28-26PII": (200, ["F", ""])
                             , "27-28-26PIII": (200, ["E", ""])
                             , "21P": (200, [""])
                             , "1": (3000, [""])
                             , "2P": (2250, [""])}
-        #master_dict = {"25": (50*0,[""])}
+        master_dict = {"25": (761,[""])}
         #master_dict = {}
 
         pool = ThreadPoolExecutor(max_workers=core_count)

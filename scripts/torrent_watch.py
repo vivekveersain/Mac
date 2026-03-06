@@ -56,8 +56,8 @@ def master(targets):
         # notify("Torrent Watch!", "Run Complete")
 
 targets = {
-          "Subedaar" : [],
-          "Ikkis" : [["2026"]],
+          #"Subedaar" : [],
+          #"Ikkis" : [["2026"]],
           "Border 2" : [["2026"], ["Hunters"]],
           "The Odyssey": [["2026"]],
           "The Social Reckoning": [],

@@ -320,7 +320,7 @@ def post(title, data, priority = "default", tags = "", link = None):
     requests.post("https://ntfy.sh/kaptaan_jack_sparrow_real_estate",
         data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
         headers=headers)
-    print(data)
+    #print(data)
     
 def pull_unavailable_entries_from_history(latest_data, last_data):
     changes = False

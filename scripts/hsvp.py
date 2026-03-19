@@ -417,7 +417,7 @@ if __name__ == '__main__':
                             , "21P": (200, [""])
                             , "1": (3000, [""])
                             , "2P": (2250, [""])}
-        master_dict = {"25": (761,[""])}
+        #master_dict = {"25": (761,[""])}
         #master_dict = {}
 
         pool = ThreadPoolExecutor(max_workers=core_count)

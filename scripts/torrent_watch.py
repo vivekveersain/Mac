@@ -57,7 +57,7 @@ def master(targets):
 
 targets = {
           #"Subedaar" : [],
-          #"Ikkis" : [["2026"]],
+          "The Devil Wears Prada" : [["2026"]],
           "Border 2" : [["2026"], ["Hunters"]],
           "The Odyssey": [["2026"]],
           "The Social Reckoning": [],

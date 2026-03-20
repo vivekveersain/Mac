@@ -4,6 +4,7 @@ import requests
 import pandas as pd
 import os
 import time
+import json
 
 pd.set_option('display.float_format', '{:.2f}'.format)
 
@@ -55,13 +56,8 @@ def master(targets):
         pass
         # notify("Torrent Watch!", "Run Complete")
 
-targets = {
-          #"Subedaar" : [],
-          "The Devil Wears Prada" : [["2026"]],
-          "Border 2" : [["2026"], ["Hunters"]],
-          "The Odyssey": [["2026"]],
-          "The Social Reckoning": [],
-          "Jumanji": [["2026"]],
-          "Avengers: Doomsday": [["2026"]],
-          }
+
+with open("/home/vabarya/data/0000_movies_lookout.jsonl", encoding="utf-8") as f:
+    filtered = '\n'.join(line for line in f if not line.strip().startswith(("//","#")))
+    targets = json.loads(filtered)
 master(targets)

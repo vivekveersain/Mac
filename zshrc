@@ -17,8 +17,7 @@ source ~/.config/keys.env
 
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH:~/Xtra/executables/:~/Xtra/executables/node/bin:/opt/local/bin:/opt/local/sbin
 
-put() {if [ $1 ]; then if [ $2 ]; then dest="storage/downloads/$2"; else dest=""; fi; scp -v -P 8022 $1 u0_a154@192.168.1.102:/data/data/com.termux/files/home/$dest; fi;}
-
+alias movies_lookout="scp ${HOME}/Downloads/temp/0000_movies_lookout.jsonl vabarya@lan:/home/vabarya/data/0000_movies_lookout.jsonl"
 alias speedtest="speedtest-cli --bytes"
 alias start_ftp='echo Starting FTP at: $(ipconfig getifaddr en0); loc="/Volumes/Seagate Backup Plus Drive/Xtras/"; if [[ ! -d "$loc" ]] ; then loc="${HOME}/Movies/"; fi; python -m pyftpdlib --directory="$loc"'
 alias youtube="yt-dlp --remote-components ejs:github --js-runtimes node -f bestvideo+bestaudio"

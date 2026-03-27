@@ -2,6 +2,11 @@
 #export OPENSSL_CONF=~/Github/Scrappers/temp_openssl.cnf
 #temp settings end
 
+#legacy systems
+export PLAYWRIGHT_BROWSERS_PATH=${HOME}/Xtra/executables/playwright
+activate() {source ${HOME}/Xtra/development/$1/bin/activate}
+#legacy systems end
+
 #Terminal Colours Start
 export PROMPT='%F{yellow}%~%b%f %F{red}$%f '
 #export PROMPT='%F{green}%n%f@%F{cyan}%m%f %F{yellow}%B%~%b%f $ '
@@ -47,12 +52,6 @@ search() { [[ "$2" == "-d" ]] && find / -name "*$1*" -print0 2>/dev/null | xargs
 github_sync() {cp "${HOME}/.zshrc" "${HOME}/Github/Mac/zshrc"; cd "${HOME}/Github/"; for dir in */; do; echo ""; echo "==> $dir"; cd "$dir"; rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi; cd ..; done; cd;}
 
 push() {rm .DS_Store 2> /dev/null; git pull; if [[ -n $(git status --porcelain) ]]; then git add . ; git reset -- .DS_Store; git commit -m "Automated commit: $(date +'%Y-%m-%d %H:%M:%S')"; git push; fi;}
-
-#backup_torrent_files() { hdd="/Volumes/Seagate Backup Plus Drive"; tor_files="$hdd/Xtras/Torrent Files/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; if mount | grep -q $hdd; then; cp $qbt_loc/*.torrent $tor_files; echo Backed up : $(ls $tor_files | wc -l); else; echo Drive NOT Mounted!!; fi;}
-
-alias setup_files_sync='scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.termux/files/home/storage/downloads/scripts/ ${HOME}/Github/Mac/; scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.termux/files/home/.bashrc ${HOME}/Github/Mac/scripts/; scp -v -P 8022 -r u0_a154@192.168.1.102:/data/data/com.termux/files/home/.termux/boot/ ${HOME}/Github/Mac/scripts/'
-
-copy_torrent_files() { hdd="${HOME}/Downloads"; tor_files="$hdd/Shared/"; qbt_loc="${HOME}/Library/Application Support/qBittorrent/BT_backup"; cp $qbt_loc/$1*.torrent $tor_files; echo Copied : $(ls $tor_files | wc -l);}
 
 alias dependencies_brew='brew leaves | xargs brew deps --for-each --tree | sed "s/ .*/$(tput setaf 1)&$(tput sgr0)/"'
 #alias mp3youtube="yt-dlp --extract-audio --audio-quality 320K --audio-format mp3 -P ${HOME}/Downloads"

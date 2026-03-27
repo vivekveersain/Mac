@@ -366,6 +366,7 @@ def comp_master(city, sector, latest_data, last_data):
         if changes:
             #print(f"{plot_id}:")
             plot_size = plot_id[4].split('(')[0].strip(' ')
+            plot_number = plot_id[2]
             item_ += f"\n{plot_id[2]}/{plot_id[3][0]}@ {plot_size} >> {today_entry['Allottee Name']}\n"
             for r, (field, change) in enumerate(changes.items()):
                 #print(f"    {field}: {change['yesterday']} -> {change['today']}")
@@ -375,7 +376,7 @@ def comp_master(city, sector, latest_data, last_data):
                     try: item_ += f"    {field}: {to_currency(change['yesterday'])} -> {to_currency(change['today'])}\n"
                     except: item_ += f"    {field}: {change['yesterday']} -> {change['today']}\n"
                 else: item_ += f"    {field}: {change['yesterday']} -> {change['today']}\n"
-            if plot_size == "4 Marla" and negative: continue
+            if (plot_size == "4 Marla" or plot_number == "578") and negative: continue
             if today_entry['PlotStatus'] != "Allotted" and r == 0: continue
             if negative: negs += item_
             else: stacker += item_

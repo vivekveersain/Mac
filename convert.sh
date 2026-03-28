@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DOWNLOADS_DIR=~/Downloads
-OUTPUT_DIR=~/Downloads/converted
+DOWNLOADS_DIR=${HOME}/Downloads
+OUTPUT_DIR="${DOWNLOADS_DIR}/converted"
 
 # Create output directory if it doesn't exist
 mkdir -p "$OUTPUT_DIR"

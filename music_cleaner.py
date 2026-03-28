@@ -1,5 +1,5 @@
 """
-@author: Vievk V. Arya [github.com/vivekveersain]
+@author: Vivek V. Arya [github.com/vivekveersain]
 """
 import mutagen
 from mutagen.easyid3 import EasyID3
@@ -55,5 +55,5 @@ class Music:
                 if abs_path[-4:].lower() == '.mp3': self.clean(abs_path)
                 else: os.remove(abs_path)
 
-music = Music('/Users/vabarya/Music/Music')
+music = Music(os.path.expanduser('~')+'/Music/Music')
 music.run()

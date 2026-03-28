@@ -26,7 +26,7 @@ def extract_pages(pdf_path, page_range, output_path):
     print(f"Extracted pages {start + 1} to {end + 1} into '{output_path}'")
 
 # Example usage
-path = "/Users/vabarya/Downloads/dev/"
+path = "~/Downloads/dev/"
 path = ""
 pdf_path = path+"input.pdf"  # Replace with your input PDF file path
 page_range = input("Page Range: ")

@@ -8,12 +8,13 @@ from lxml import html
 
 import requests
 
-DUMP_DIR = "/home/vabarya/data/hsvp/"
+HOME = os.path.expanduser("~")
+DUMP_DIR = HOME + "/data/hsvp/"
 TODAY=str(date.today())
 #TODAY="2025-09-02"
 
 # Clear Log file!!
-with open("/home/vabarya/logs/hsvp.log", "w") as f: f.write("")
+with open(HOME + "/logs/hsvp.log", "w") as f: f.write("")
 
 def get_public_details(post_data, row = 0):
 

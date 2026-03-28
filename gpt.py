@@ -13,11 +13,11 @@ YELLOW = "\033[33m"
 RED = "\033[31m"
 RESET = "\033[0m"
 
-# Load API key from ~/.config/chatgpt.env if present
+# Load API key
 api_key = os.environ.get("OPENAI_API_KEY")
 
 if not api_key:
-    print(f"{RED}Error:{RESET} OPENAI_API_KEY not set in ~/.config/chatgpt.env")
+    print(f"{RED}Error:{RESET} OPENAI_API_KEY not set in environment")
     sys.exit(1)
 
 print(f"{YELLOW}ChatGPT Streaming Assistant (type 'exit' to quit){RESET}\n")

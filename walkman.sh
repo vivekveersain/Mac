@@ -1,5 +1,5 @@
 #"""
-#@author: Vievk V. Arya [github.com/vivekveersain]
+#@author: Vivek V. Arya [github.com/vivekveersain]
 #"""
 
 python3 ~/Github/Mac/music_cleaner.py

@@ -9,9 +9,9 @@ import json
 pd.set_option('display.float_format', '{:.2f}'.format)
 
 def search(name, must = [], skip = [], min_size = 1, min_seeds = 30 ):
-    print(name, must, skip, min_size, min_seeds)
+    # print(name, must, skip, min_size, min_seeds)
     low_q = ["CAM", "HDTS", "HD.TS", "HD-TS", "HD TS", "900MB", "DVDSCR", "HDRIP", "DVDRIP", "HDTV", "HD.TV", "HD-TV"
-    ,"1600MB", "HD TV"] + skip
+    ,"1600MB", "HD TV", "TELESYNC"] + skip
     results = requests.get('https://apibay.org/q.php',params={'q':name})
     if int(results.status_code) == 200:
         results = results.json()

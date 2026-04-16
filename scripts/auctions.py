@@ -140,15 +140,11 @@ def dump_data(now_available):
     file_name = expanduser("~")+"/data/hsvp/auctions.pkl"
     with open(file_name, "wb") as f: pickle.dump(str(now_available), f)
 
+
+from postman import dispatch
 def post(title, data, priority = "default", tags = "", link = None):
     if len(data) == 0: return
-    headers = {"Title": title, "Priority": priority}
-    if tags: headers.update({"Tags": tags})
-    if link: headers.update({ "Click": link}) #"Attach": link,
-
-    requests.post("https://ntfy.sh/kaptaan_jack_sparrow_real_estate",
-        data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
-        headers=headers)
+    dispatch("kaptaan_jack_sparrow_real_estate", title, data, priority, tags, link)
 
 def master_function(city, sectors):
     if site_available():

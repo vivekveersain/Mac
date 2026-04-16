@@ -18,14 +18,9 @@ FILE = "court.pkl"
 
 # print(HOME, DATA_DIR, FILE)
 
+from postman import dispatch
 def post(title, data, priority = "default", tags = "", link = None):
-    headers = {"Title": title, "Priority": priority}
-    if tags: headers.update({"Tags": tags})
-    if link: headers.update({ "Click": link}) #"Attach": link,
-
-    requests.post("https://ntfy.sh/kaptaan_court",
-        data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
-        headers=headers)
+    dispatch("kaptaan_court", title, data, priority, tags, link)
 
 def load_data(local_data):
     try:

@@ -11,7 +11,7 @@ pd.set_option('display.float_format', '{:.2f}'.format)
 def search(name, must = [], skip = [], min_size = 1, min_seeds = 30 ):
     # print(name, must, skip, min_size, min_seeds)
     low_q = ["CAM", "HDTS", "HD.TS", "HD-TS", "HD TS", "900MB", "DVDSCR", "HDRIP", "DVDRIP", "HDTV", "HD.TV", "HD-TV"
-    ,"1600MB", "HD TV", "TELESYNC"] + skip
+    ,"1600MB", "HD TV", "TELESYNC", "WEB Line"] + skip
     results = requests.get('https://apibay.org/q.php',params={'q':name})
     if int(results.status_code) == 200:
         results = results.json()
@@ -32,21 +32,13 @@ def search(name, must = [], skip = [], min_size = 1, min_seeds = 30 ):
     else:
         notify("Torrent ERROR!!", results.status_code)
 
+from postman import dispatch
 def notify(title, text, tags = [], priority = "default", link = None):
-    # os.system("""
-    #           osascript -e 'display notification "{}" with title "{}"'
-    #           """.format(text, title))
-    # print(f"==> {text} <> {title}")
     title = title.replace("\r", "").replace("\t", "").replace("\n", "")
-    data = text.replace("\r", "").replace("\t", "")
-    headers = {"Title": title, "Priority": priority}
-    if tags: headers.update({"Tags": tags})
-    if link: headers.update({ "Click": link}) #"Attach": link,
+    data = text.replace("\r", "").replace("\t", "").encode("latin-1", "ignore").strip().decode(errors = "ignore")
 
-    response = requests.post("https://ntfy.sh/kaptaan",
-        data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
-        headers=headers)
-    print(f"==> {title} <> {data} <> {response.text}")
+    dispatch("kaptaan", title, data, priority, tags, link)
+    print(f"==> {title} <> {data}")
 
 def master(targets):
     for key in targets:

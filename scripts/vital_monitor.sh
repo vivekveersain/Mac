@@ -45,7 +45,7 @@ while true; do
         # Check if more than 30 seconds have passed since the last notification
         if [ "$((current_time - last_notification_time))" -ge 30 ]; then
             # Send notification and update last notification time
-            curl -s -d "Overheating at $temp°C" ntfy.sh/kaptaan > /dev/null 2>&1
+            curl -s -d "Overheating at $temp°C" $PLATFORM/kaptaan > /dev/null 2>&1
             last_notification_time=$current_time  # Update the timestamp of the last notification
         fi
     fi

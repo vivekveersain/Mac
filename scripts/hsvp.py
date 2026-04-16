@@ -312,16 +312,9 @@ def create_lookup(data):
         lookup[plot_id] = entry
     return lookup
 
+from postman import dispatch
 def post(title, data, priority = "default", tags = "", link = None):
-    if len(data) == 0: return
-    headers = {"Title": title, "Priority": priority}
-    if tags: headers.update({"Tags": tags})
-    if link: headers.update({ "Click": link}) #"Attach": link,
-
-    requests.post("https://ntfy.sh/kaptaan_jack_sparrow_real_estate",
-        data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
-        headers=headers)
-    #print(data)
+    dispatch("kaptaan_jack_sparrow_real_estate", title, data, priority, tags, link)
     
 def pull_unavailable_entries_from_history(latest_data, last_data):
     changes = False

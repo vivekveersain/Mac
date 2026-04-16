@@ -3,6 +3,10 @@ from datetime import datetime
 import base64
 import json
 
+from postman import dispatch
+def post(title, data, priority = "default", tags = "", link = None):
+    dispatch("kaptaan", title, data, priority, tags, link)
+
 # Function to initialize a session and set cookies
 def create_session():
     session = requests.Session()
@@ -108,17 +112,6 @@ def main(url, data, headers, city):
     # Extract AQI data for the specified city and return the raw string
     raw_string = extract_aqi_data(json_data, city)
     return raw_string
-
-def post(title, data, priority = "default", tags = "", link = None):
-    title = title.replace("\r", "").replace("\t", "").replace("\n", "")
-    data = data.replace("\r", "").replace("\t", "")
-    headers = {"Title": title, "Priority": priority}
-    if tags: headers.update({"Tags": tags})
-    if link: headers.update({ "Click": link}) #"Attach": link,
-
-    requests.post("https://ntfy.sh/kaptaan",
-        data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
-        headers=headers)
 
 def AI_AQI(city):
     url = f'https://www.iqair.com/search-results.data?q={city}&filter=aqi&_routes=routes%2F%24%28locale%29.search-results'

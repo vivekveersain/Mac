@@ -92,7 +92,7 @@ def postman(PING_STACK):
         except: degree = ""
 
         message = "\n".join([" ".join(row[:-1]) for row in PING_STACK]) + "\n\n" + degree
-        url = "https://ntfy.sh/kaptaan_network"
+        url = PLATFORM + "/kaptaan_network"
         headers = {"Title": datetime.now().strftime("%Y.%m.%d %H:%M:%S")}
         requests.post(url, data=message.encode("utf-8"), timeout=10, headers = headers)
 

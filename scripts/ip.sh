@@ -15,8 +15,7 @@ stored_ip=$(cat "$ip_file")
 
 # Compare current IP with stored IP
 if [ "$current_ip" != "$stored_ip" ]; then
-  # Send a notification via ntfy
-  curl -s -d "IP Changed!" ntfy.sh/kaptaan_network > /dev/null 2>&1
+  curl -s -d "IP Changed!" $PLATFORM/kaptaan_network > /dev/null 2>&1
 
   # Log the IP change with timestamp
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $current_ip" >> "$ip_log_file"

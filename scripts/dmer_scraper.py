@@ -7,16 +7,9 @@ import os
 os.chdir(os.path.expanduser("~") + "/scripts/")
 local_data_file = os.path.expanduser("~") + "/data/dmer_scraper.pkl"
 
+from postman import dispatch
 def post(title, data, priority = "default", tags = "", link = None):
-    title = title.replace("\r", "").replace("\t", "").replace("\n", "")
-    data = data.replace("\r", "").replace("\t", "")
-    headers = {"Title": title, "Priority": priority}
-    if tags: headers.update({"Tags": tags})
-    if link: headers.update({ "Click": link}) #"Attach": link,
-
-    requests.post("https://ntfy.sh/kaptaan",
-        data=data.encode("latin-1", "ignore").strip().decode(errors = "ignore"),
-        headers=headers)
+    dispatch("kaptaan", title, data, priority, tags, link)
 
 def reset_for_new_yr():
     with open(local_data_file, "rb") as f: local_data = pickle.load(f)

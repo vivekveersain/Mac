@@ -2,12 +2,14 @@
   "name": "latex-outline",
   "displayName": "LaTeX Outline",
   "description": "Provides a hierarchical outline for LaTeX documents, supporting multi-file navigation.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "vivekarya",
   "engines": {
     "vscode": "^1.75.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [
     "onLanguage:latex",
     "onCommand:latex-outline.refresh",
@@ -19,8 +21,13 @@
     "languages": [
       {
         "id": "latex",
-        "extensions": [".tex"],
-        "aliases": ["LaTeX", "latex"]
+        "extensions": [
+          ".tex"
+        ],
+        "aliases": [
+          "LaTeX",
+          "latex"
+        ]
       }
     ],
     "commands": [

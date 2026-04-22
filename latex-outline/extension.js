@@ -21,7 +21,8 @@ async function expandInputs(uri, visited = new Set()) {
   try {
     const doc = await openTextSynchronously(uri);
     const lines = doc.getText().split(/\r?\n/);
-    const inputCmd = /^\\(?:input|include)\{([^}]+)\}/;
+    // accept \input{file} or \include{file}
+    const inputCmd = /^\s*\\(?:input|include)\{([^}]+)\}/;
 
     // -- detection regexes (match the same cases extractLatexHierarchy cares about)
     const sectionRegex = /\\(part|chapter|section|subsection|subsubsection|annexture)(\*)?\{([^}]+)\}/;
@@ -31,14 +32,21 @@ async function expandInputs(uri, visited = new Set()) {
     const lofRegex = /\\listoffigures/;
     const titlePageRegex = /\\begin\{titlepage\}/;
     const endTitlePageRegex = /\\end\{titlepage\}/;
-    const captionSetupTableRegex = /\\captionsetup\{type=table\}/;
-    const captionSetupFigureRegex = /\\captionsetup\{type=figure\}/;
+
+    // Make captionsetup detection robust: allow spaces/options and other keys
+    const captionSetupTableRegex = /\\captionsetup\{[^}]*\btype\s*=\s*table\b[^}]*\}/;
+    const captionSetupFigureRegex = /\\captionsetup\{[^}]*\btype\s*=\s*figure\b[^}]*\}/;
+
     const captionRegex = /\\caption\{([^}]+)\}/;
     const bibliographyRegex = /\\bibliography\{[^}]+\}/;
     const titleRegex = /\\title\{([^}]+)\}/;
-    const beginFigureRegex = /^\\begin\{figure/;
-    const beginTableRegex  = /^\\begin\{table/;
-    const unnamedTableRegex = /\\begin\{table\}(?![\s\S]*?\\begin\{table\}[\s\S]*?\\end\{table\})/;
+
+    // updated: match figure* and table* (begin)
+    const beginFigureRegex = /^\s*\\begin\{figure\*?\}/;
+    const beginTableRegex  = /^\s*\\begin\{table\*?\}/;
+
+    // unnamed table detection (avoid nested detection), support table*
+    const unnamedTableRegex = /\\begin\{table\*?\}(?![\s\S]*?\\begin\{table\*?\}[\s\S]*?\\end\{table\*?\})/;
 
     function contributesOutline(srcLines) {
       // srcLines: array of { text, uri, lineNum, placeholder?, missing? }
@@ -65,9 +73,10 @@ async function expandInputs(uri, visited = new Set()) {
       });
     }
 
+    // iterate lines and expand inputs recursively
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const m = inputCmd.exec(line.trim());
+      const m = inputCmd.exec(line); // already trimmed within regex
       if (m) {
         const relPath = m[1];
         const basedir = path.dirname(uri.fsPath);
@@ -82,20 +91,36 @@ async function expandInputs(uri, visited = new Set()) {
             break;
           }
         }
-    
+
         // 🔹 Handle missing file here
-        if (!target) {
-          const baseName = path.basename(candidates[1], ".tex");
-          expanded.push({
-            text: "",
-            uri: vscode.Uri.file(candidates[1]), // point to would-be file
-            lineNum: 0,
-            placeholder: `[${baseName}]`,
-            missing: true,
-          });
-          continue; // skip further expansion
-        }
-    
+        // if (!target) {
+        //   const baseName = path.basename(candidates[1], ".tex");
+        //   expanded.push({
+        //     text: "",
+        //     uri: vscode.Uri.file(candidates[1]), // point to would-be file
+        //     lineNum: 0,
+        //     placeholder: `[${baseName}]`,
+        //     missing: true,
+        //   });
+        //   continue; // skip further expansion
+        // }
+
+        // Only flag as missing if not starting with './'
+if (!target) {
+  if (!relPath.startsWith('./')) {
+    const baseName = path.basename(candidates[1], ".tex");
+    expanded.push({
+      text: "",
+      uri: vscode.Uri.file(candidates[1]), // point to would-be file
+      lineNum: 0,
+      placeholder: `[${baseName}]`,
+      missing: true,
+    });
+  }
+  // Otherwise, just skip (don't add a missing node for local paths)
+  continue;
+}
+
         // 🔹 Existing file → expand as before
         const baseName = path.basename(target.fsPath, ".tex");
         const childExpanded = await expandInputs(target, visited);
@@ -112,11 +137,11 @@ async function expandInputs(uri, visited = new Set()) {
         }
         continue;
       }
-    
+
       // normal non-\input line
       expanded.push({ text: line, uri, lineNum: i });
     }
-    
+
   } catch (e) {
     // optionally console.error(e);
   }
@@ -149,17 +174,33 @@ function extractLatexHierarchy(srcLines) {
   const lofRegex = /\\listoffigures/;
   const titlePageRegex = /\\begin\{titlepage\}/;
   const endTitlePageRegex = /\\end\{titlepage\}/;
-  const captionSetupTableRegex = /\\captionsetup\{type=table\}/;
-  const captionSetupFigureRegex = /\\captionsetup\{type=figure\}/;
+
+  // robust captionsetup regexes (allow extra options / whitespace)
+  const captionSetupTableRegex = /\\captionsetup\{[^}]*\btype\s*=\s*table\b[^}]*\}/;
+  const captionSetupFigureRegex = /\\captionsetup\{[^}]*\btype\s*=\s*figure\b[^}]*\}/;
+
   const captionRegex = /\\caption\{([^}]+)\}/;
   const bibliographyRegex = /\\bibliography\{[^}]+\}/;
-  const unnamedTableRegex = /\\begin\{table\}(?![\s\S]*?\\begin\{table\}[\s\S]*?\\end\{table\})/;
+  const unnamedTableRegex = /\\begin\{table\*?\}(?![\s\S]*?\\begin\{table\*?\}[\s\S]*?\\end\{table\*?\})/;
   const titleRegex = /\\title\{([^}]+)\}/;
+
+  // match begin / end with optional star
+  const beginFigureRegex = /^\s*\\begin\{figure\*?\}/;
+  const beginTableRegex  = /^\s*\\begin\{table\*?\}/;
+  const endFigureRegex   = /^\s*\\end\{figure\*?\}/;
+  const endTableRegex    = /^\s*\\end\{table\*?\}/;
+
   function cleanLatexTitle(title) {
     return title.replace(/\\[a-zA-Z]+\{[^}]*\}/g, "").replace(/\\[a-zA-Z]+/g, "").trim();
   }
   let insideFigure = false, figureStartIdx = 0, figureCaption = null;
   let insideTable = false, tableStartIdx = 0, tableCaption = null;
+
+  // When inside a single figure environment we may also detect "inner" captionsetup-based
+  // tables/figures (e.g. minipage + \captionsetup{type=table}). Track whether the current
+  // figure contained any inner captioned items so we can avoid producing a duplicate
+  // outer figure entry if inner items already represent the content.
+  let insideFigureInnerCount = 0;
 
   for (let idx = 0; idx < lines.length; idx++) {
     let line = (lines[idx] || "").trim();
@@ -179,6 +220,7 @@ function extractLatexHierarchy(srcLines) {
       continue;
     }
 
+    // Title / bibliography / titlepage / lists
     let titleMatch = titleRegex.exec(line);
     if (titleMatch) {
       symbols.push({
@@ -262,6 +304,7 @@ function extractLatexHierarchy(srcLines) {
       continue;
     }
 
+    // Sections
     let sectionMatch = sectionRegex.exec(line);
     if (sectionMatch) {
       const sectionType = sectionMatch[1];
@@ -324,70 +367,22 @@ function extractLatexHierarchy(srcLines) {
       continue;
     }
 
-    if (line.startsWith("\\begin{figure")) {
+    // ---- Environment starts: detect them early so nested things can be caught ----
+    if (beginFigureRegex.test(line)) {
       insideFigure = true;
       figureStartIdx = idx;
       figureCaption = null;
-      continue;
+      insideFigureInnerCount = 0;
+      // don't `continue` here — allow processing of captionsetup/caption on same line
     }
-    if (insideFigure) {
-      let figureCaptionMatch = captionRegex.exec(line);
-      if (figureCaptionMatch) {
-        figureCaption = figureCaptionMatch[1];
-      }
-      if (line.startsWith("\\end{figure}")) {
-        const start = srcLines[figureStartIdx];
-        const item = {
-          label: figureCaption ? figureCaption : "Figure",
-          file: start.uri,
-          line: start.lineNum,
-          kind: "figure",
-          children: [],
-        };
-        let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
-        if (insideAppendix && appendixNode) {
-          if (currentAnnexure) currentAnnexure.children.push(item);
-          else if (appendixChapter) appendixChapter.children.push(item);
-          else appendixNode.children.push(item);
-        } else if (parent) parent.children.push(item);
-        else symbols.push(item);
-        insideFigure = false;
-        figureCaption = null;
-      }
-      continue;
-    }
-    if (line.startsWith("\\begin{table")) {
+    if (beginTableRegex.test(line)) {
       insideTable = true;
       tableStartIdx = idx;
       tableCaption = null;
-      continue;
+      // don't `continue` here — allow processing of caption on same line
     }
-    if (insideTable) {
-      let tableCaptionMatch = captionRegex.exec(line);
-      if (tableCaptionMatch) {
-        tableCaption = tableCaptionMatch[1];
-      }
-      if (line.startsWith("\\end{table}")) {
-        const start = srcLines[tableStartIdx];
-        const item = {
-          label: tableCaption ? tableCaption : "Table",
-          file: start.uri,
-          line: start.lineNum,
-          kind: "table",
-          children: [],
-        };
-        let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
-        if (insideAppendix && appendixNode) {
-          if (currentAnnexure) currentAnnexure.children.push(item);
-          else if (appendixChapter) appendixChapter.children.push(item);
-          else appendixNode.children.push(item);
-        } else if (parent) parent.children.push(item);
-        else symbols.push(item);
-        insideTable = false;
-        tableCaption = null;
-      }
-      continue;
-    }
+
+    // Handle captionsetup inside anything (including inside a figure)
     if (captionSetupTableRegex.test(line)) {
       const item = {
         label: "Table",
@@ -404,8 +399,10 @@ function extractLatexHierarchy(srcLines) {
       } else if (parent) parent.children.push(item);
       else symbols.push(item);
       parents.table = item;
-      continue;
+      if (insideFigure) insideFigureInnerCount++;
+      // don't continue — caption might be on same line
     }
+
     if (captionSetupFigureRegex.test(line)) {
       const item = {
         label: "Figure",
@@ -422,21 +419,80 @@ function extractLatexHierarchy(srcLines) {
       } else if (parent) parent.children.push(item);
       else symbols.push(item);
       parents.figure = item;
-      continue;
+      if (insideFigure) insideFigureInnerCount++;
+      // don't continue — caption might be on same line
     }
+
+    // Now allow normal caption handling — prefers a previously-created parents.table / parents.figure
     let captionMatch = captionRegex.exec(line);
     if (captionMatch) {
       let captionText = captionMatch[1];
       if (parents.table) {
         parents.table.label = captionText;
         parents.table = null;
-      }
-      if (parents.figure) {
+      } else if (parents.figure) {
         parents.figure.label = captionText;
         parents.figure = null;
+      } else if (insideTable) {
+        // caption that belongs to table environment
+        tableCaption = captionText;
+      } else if (insideFigure) {
+        // caption that belongs to the (outer) figure environment
+        figureCaption = captionText;
       }
+      // consume caption handling, move on
       continue;
     }
+
+    // End figure: support both \end{figure} and \end{figure*}
+    if (insideFigure && endFigureRegex.test(line)) {
+      // If we've already created inner captioned items inside this figure (minipages etc.)
+      // then prefer those rather than creating a duplicate outer "Figure" item.
+      if (insideFigureInnerCount === 0) {
+        const start = srcLines[figureStartIdx];
+        const item = {
+          label: figureCaption ? figureCaption : "Figure",
+          file: start.uri,
+          line: start.lineNum,
+          kind: "figure",
+          children: [],
+        };
+        let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
+        if (insideAppendix && appendixNode) {
+          if (currentAnnexure) currentAnnexure.children.push(item);
+          else if (appendixChapter) appendixChapter.children.push(item);
+          else appendixNode.children.push(item);
+        } else if (parent) parent.children.push(item);
+        else symbols.push(item);
+      }
+      insideFigure = false;
+      figureCaption = null;
+      insideFigureInnerCount = 0;
+      continue;
+    }
+
+    // End table: support both \end{table} and \end{table*}
+    if (insideTable && endTableRegex.test(line)) {
+      const start = srcLines[tableStartIdx];
+      const item = {
+        label: tableCaption ? tableCaption : "Table",
+        file: start.uri,
+        line: start.lineNum,
+        kind: "table",
+        children: [],
+      };
+      let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
+      if (insideAppendix && appendixNode) {
+        if (currentAnnexure) currentAnnexure.children.push(item);
+        else if (appendixChapter) appendixChapter.children.push(item);
+        else appendixNode.children.push(item);
+      } else if (parent) parent.children.push(item);
+      else symbols.push(item);
+      insideTable = false;
+      tableCaption = null;
+      continue;
+    }
+
     if (unnamedTableRegex.test(line)) {
       continue;
     }
@@ -591,16 +647,23 @@ function activate(context) {
         // Ensure parent directory exists
         await fs.promises.mkdir(path.dirname(uri.fsPath), { recursive: true });
   
+        // Figure out the actual root file
+        const rootUri = treeProvider.rootUri;
+        let starter = "";
+        if (rootUri) {
+          const relPath = path.relative(path.dirname(uri.fsPath), rootUri.fsPath);
+          starter = `% !TeX root = ${relPath.replace(/\\/g, "/")}\n\n`;
+        }
+  
         // Create the file only if it doesn’t already exist
         if (!fs.existsSync(uri.fsPath)) {
-          const starter = "% !TeX root = ../main.tex\n\n";
           await fs.promises.writeFile(uri.fsPath, starter, { flag: "wx" });
         }
   
         // Open it
         const doc = await vscode.workspace.openTextDocument(uri);
         await vscode.window.showTextDocument(doc);
-
+  
         // Refresh the outline so placeholder becomes real node
         if (treeProvider && typeof treeProvider.refresh === "function") {
           await treeProvider.refresh();
@@ -610,6 +673,7 @@ function activate(context) {
       }
     })
   );
+  
   context.subscriptions.push(
     vscode.commands.registerCommand("latexOutline.toggleExpandCollapse", async () => {
       await treeProvider.toggleExpandCollapse();

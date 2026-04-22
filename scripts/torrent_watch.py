@@ -12,6 +12,8 @@ def search(name, must = [], skip = [], min_size = 1, min_seeds = 30 ):
     # print(name, must, skip, min_size, min_seeds)
     low_q = ["CAM", "HDTS", "HD.TS", "HD-TS", "HD TS", "900MB", "DVDSCR", "HDRIP", "DVDRIP", "HDTV", "HD.TV", "HD-TV"
     ,"1600MB", "HD TV", "TELESYNC", "WEB Line"] + skip
+    trojan = [".exe"]
+
     results = requests.get('https://apibay.org/q.php',params={'q':name})
     if int(results.status_code) == 200:
         results = results.json()
@@ -19,6 +21,7 @@ def search(name, must = [], skip = [], min_size = 1, min_seeds = 30 ):
         df = pd.DataFrame()
         for result in results:
             if any(flag.upper() in result["name"].upper() for flag in low_q): continue
+            if any(result["name"].upper().endswith(flag.upper()) for flag in trojan): continue
             if all(flag.upper() in result["name"].upper() for flag in must): stack.append(result)
         if len(stack) > 0:
             df = df.from_dict(stack)

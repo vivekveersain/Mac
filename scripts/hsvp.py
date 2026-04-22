@@ -21,8 +21,8 @@ def get_public_details(post_data, row = 0):
     detail_elements = ['PlotStatus', 'Cancelled', 'Mortgage', 'Resumed', 'BuildingPlanApproved'
                     , 'SanctionDate', 'AllotmentLetterMemoNumber', 'AllotmentDate', 'CourtCase'
                     , 'DefaultPayment', 'Constructed', 'FullyPaid']
-    basic_elements = ['Zone', 'Estate Office', 'Urban Estate', 'Sector No.', 'Plot No.', 'Property Category',
-                        'Sub Category', 'Allottee Name', "Mobile Number", "Aadhar Number", "Status"]
+    basic_elements = ['Zone', 'Estate Office', 'Urban Estate', 'Sector No.', 'Plot No.',
+    'Property Category', 'Sub Category', 'Allottee Name', "Mobile Number", "Aadhar Number", "Status"]
     
 
     out = requests.post("https://hsvphry.org.in/Pages/PlotStatusEnquiry", data = post_data, timeout=30)

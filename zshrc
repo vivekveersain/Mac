@@ -68,6 +68,7 @@ alias summary='python ~/Github/Mac/summary.py'
 alias convert='sh ~/Github/Mac/convert.sh'
 #alias tesseract='tesseract -c preserve_interword_spaces=1'
 alias texlive25='export PATH=/usr/local/texlive/2025basic/bin/universal-darwin:$PATH'
+export PATH=/usr/local/texlive/2025basic/bin/universal-darwin:$PATH
 #Custom Commands End
 
 #Brew Start

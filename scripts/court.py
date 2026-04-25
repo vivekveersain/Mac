@@ -1,31 +1,34 @@
 import time
 import requests
 from datetime import date
-import pickle
+# import pickle
 import copy
 import os
 from lxml import html
+import json
 
-local_data = {"HRJRA00000892025" : {"posts": [], "next_action":""},
-              "HRJRA00000232025" : {"posts": [], "next_action":""},
-              "HRJRA00007332024" : {"posts": [], "next_action":""},
-              "HRPP020019482025" : {"posts": [], "next_action":""}
+local_data = {"HRJRA00000892025" : {"posts": [], "next_action":"", "details":"Neeraj VS. Rajbir"},
+              "HRJRA00000232025" : {"posts": [], "next_action":"", "details":"Nyaadari"},
+              "HRJRA00007332024" : {"posts": [], "next_action":"", "details":"Bhadbujhan VS. Tek Chand"},
+              "HRPP020019482025" : {"posts": [], "next_action":"", "details":"Bhim Singh VS. Sukhbir Singh"}
               }
 
 HOME = os.environ.get("HOME")
 DATA_DIR = f"{HOME}/data/"
-FILE = "court.pkl"
+FILE = "court.json"
 
 # print(HOME, DATA_DIR, FILE)
 
-from postman import dispatch
+from postman import dispatch, create_event
 def post(title, data, priority = "default", tags = "", link = None):
     dispatch("kaptaan_court", title, data, priority, tags, link)
 
 def load_data(local_data):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
-        with open(DATA_DIR + FILE, "rb") as f: new_local_data = pickle.load(f)
+        with open(DATA_DIR + FILE, "r") as f:
+            new_local_data = json.load(f)
+        # with open(DATA_DIR + FILE, "r") as f: new_local_data = pickle.load(f)
         local_data.update(new_local_data)
         #print("LOADED!!!")
     except:
@@ -36,7 +39,8 @@ def load_data(local_data):
 def dump_data(local_data):
     #local_data = {"HRJRA00000892025" : {"posts": [], "next_action":""}}
     try:
-        with open(DATA_DIR + FILE, "wb") as f: pickle.dump(local_data, f)
+        with open(DATA_DIR + FILE, "w") as f: json.dump(local_data, f, indent=4)
+        # with open(DATA_DIR + FILE, "wb") as f: pickle.dump(local_data, f)
         #print("DUMPED!!!")
     except:
         pass
@@ -59,6 +63,7 @@ def court_case(cino):
         "es_ajax_request": "1"
     }
     #print(url, payload)
+    print(cino)
 
     response = requests.post(url, data=payload)
     #print(response)
@@ -108,7 +113,7 @@ def court_case(cino):
     master_dict = clean_dates(master_dict)
     return stacker, master_dict
 
-def post_updates(master_dict):
+def post_updates(master_dict, next_action, full_case_number, custom_details):
     case_number = master_dict['Case Details']['Registration Number'][0]
     next_date = master_dict['Case Status']['Next Hearing Date'][0]
     order_date = master_dict['Orders']['Order Date'][-1]
@@ -116,12 +121,16 @@ def post_updates(master_dict):
 
     master_text = format_case(master_dict)
 
+    create_event("Upcoming", full_case_number, next_action, custom_details)
     post(case_number, data = f"Next Hearing Date:{next_date}\nOrder Date:{order_date}\n\n\n{master_text}", link = order_link)
 
 def next_action_logic(master_dict, posts):
+    # print(master_dict)
+    dtls = master_dict["Case Details"]
+    case_number = dtls["Case Type"][0] + "/" + dtls["Registration Number"][0]
     next_predicted_action = min(dt for dt in master_dict['Case History']['Hearing Date'] if dt not in master_dict['Orders']['Order Date'])
     new_orders = [r for r in master_dict['Orders']['Order Date'] if r not in posts]
-    return next_predicted_action, new_orders
+    return next_predicted_action, new_orders, case_number
 
 def format_case(master_dict):
     lines = []
@@ -182,8 +191,10 @@ old_copy = copy.deepcopy(local_data)
 
 if True:
     for cino in local_data.keys():
+        # print(local_data)
         next_action = local_data[cino]["next_action"]
-        # print(cino, next_action)
+        custom_details = local_data[cino]["details"]
+        # print(cino, next_action, today)
         if next_action <= today:
             try: 
                 message, master_dict = court_case(cino)
@@ -191,10 +202,11 @@ if True:
                 print("Some Error")
                 continue
             #print(cino, next_action)
-            next_action, new_orders = next_action_logic(master_dict, local_data[cino]["posts"])
-            if new_orders: post_updates(master_dict)
+            next_action, new_orders, case_number = next_action_logic(master_dict, local_data[cino]["posts"])
+            if new_orders: post_updates(master_dict, next_action, case_number, custom_details)
             #print(next_action)
             local_data[cino]["next_action"] = next_action
             local_data[cino]["posts"] += new_orders
+            local_data[cino]["case_number"] = case_number
     if local_data != old_copy:
         dump_data(local_data)

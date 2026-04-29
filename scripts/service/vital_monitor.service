@@ -9,6 +9,7 @@ StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=vital_monitor
 Restart=always
+Environment="PLATFORM=https://ntfy.sh"
 
 [Install]
 WantedBy=multi-user.target

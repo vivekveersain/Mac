@@ -6,9 +6,8 @@ from datetime import datetime, timedelta, UTC
 
 import uuid
 
-PLATFORM = os.getenv("PLATFORM")
-
 def dispatch(channel, title, message, priority="default", tags="", link=None):
+    PLATFORM = os.getenv("PLATFORM")
     headers = {"Title": title, "Priority": priority}
 
     if tags:
@@ -18,7 +17,7 @@ def dispatch(channel, title, message, priority="default", tags="", link=None):
 
     requests.post(
         f"{PLATFORM}/{channel}",
-        data=message.encode("latin-1", "ignore"),
+        data=message.encode("utf-8", "ignore"),
         headers=headers
     )
 

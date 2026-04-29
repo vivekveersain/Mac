@@ -120,8 +120,9 @@ def post_updates(master_dict, next_action, full_case_number, custom_details):
     order_link = master_dict['Orders']['Order Details'][-1]["link"]
 
     master_text = format_case(master_dict)
+    # master_text = master_text.encode("ascii", "ignore").decode().strip()
 
-    create_event("Upcoming", full_case_number, next_action, custom_details)
+    create_event("Upcoming", full_case_number, next_action, custom_details + " >> " + order_link)
     post(case_number, data = f"Next Hearing Date:{next_date}\nOrder Date:{order_date}\n\n\n{master_text}", link = order_link)
 
 def next_action_logic(master_dict, posts):

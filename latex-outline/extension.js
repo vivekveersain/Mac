@@ -14,19 +14,24 @@ async function openTextSynchronously(uri) {
 }
 
 // Recursively expand \input/\include with file/line mapping
-async function expandInputs(uri, visited = new Set()) {
+async function expandInputs(uri, visited = new Set(), rootUri = uri) {
   if (visited.has(uri.fsPath)) return [];
   visited.add(uri.fsPath);
+
   let expanded = [];
+
   try {
     const doc = await openTextSynchronously(uri);
     const lines = doc.getText().split(/\r?\n/);
+
     // accept \input{file} or \include{file}
     const inputCmd = /^\s*\\(?:input|include)\{([^}]+)\}/;
 
     // -- detection regexes (match the same cases extractLatexHierarchy cares about)
     const sectionRegex = /\\(part|chapter|section|subsection|subsubsection|annexture)(\*)?\{([^}]+)\}/;
     const appendixRegex = /\\appendix/;
+    const frontmatterRegex = /\\frontmatter/;
+    const mainmatterRegex = /\\mainmatter/;
     const tocRegex = /\\tableofcontents/;
     const lotRegex = /\\listoftables/;
     const lofRegex = /\\listoffigures/;
@@ -40,10 +45,14 @@ async function expandInputs(uri, visited = new Set()) {
     const captionRegex = /\\caption\{([^}]+)\}/;
     const bibliographyRegex = /\\bibliography\{[^}]+\}/;
     const titleRegex = /\\title\{([^}]+)\}/;
+    const beginTheBibliographyRegex = /\\begin\{thebibliography\}\{[^}]*\}/;
+    const renewBibNameRegex = /\\renewcommand\s*\{\\bibname\}\s*\{([^}]+)\}/;
+    const renewRefNameRegex = /\\renewcommand\s*\{\\refname\}\s*\{([^}]+)\}/;
+    const printBibliographyRegex = /\\printbibliography(?:\[(.*?)\])?/;
 
     // updated: match figure* and table* (begin)
     const beginFigureRegex = /^\s*\\begin\{figure\*?\}/;
-    const beginTableRegex  = /^\s*\\begin\{table\*?\}/;
+    const beginTableRegex = /^\s*\\begin\{table\*?\}/;
 
     // unnamed table detection (avoid nested detection), support table*
     const unnamedTableRegex = /\\begin\{table\*?\}(?![\s\S]*?\\begin\{table\*?\}[\s\S]*?\\end\{table\*?\})/;
@@ -56,20 +65,24 @@ async function expandInputs(uri, visited = new Set()) {
         const line = text.trim();
         if (line.startsWith("%")) return false;
         return sectionRegex.test(line) ||
-               appendixRegex.test(line) ||
-               tocRegex.test(line) ||
-               lotRegex.test(line) ||
-               lofRegex.test(line) ||
-               titlePageRegex.test(line) ||
-               endTitlePageRegex.test(line) ||
-               captionSetupTableRegex.test(line) ||
-               captionSetupFigureRegex.test(line) ||
-               captionRegex.test(line) ||
-               bibliographyRegex.test(line) ||
-               titleRegex.test(line) ||
-               beginFigureRegex.test(line) ||
-               beginTableRegex.test(line) ||
-               unnamedTableRegex.test(line);
+          appendixRegex.test(line) ||
+          frontmatterRegex.test(line) ||
+          mainmatterRegex.test(line) ||
+          tocRegex.test(line) ||
+          lotRegex.test(line) ||
+          lofRegex.test(line) ||
+          titlePageRegex.test(line) ||
+          endTitlePageRegex.test(line) ||
+          captionSetupTableRegex.test(line) ||
+          captionSetupFigureRegex.test(line) ||
+          captionRegex.test(line) ||
+          bibliographyRegex.test(line) ||
+          titleRegex.test(line) ||
+          beginTheBibliographyRegex.test(line) ||
+          printBibliographyRegex.test(line) ||
+          beginFigureRegex.test(line) ||
+          beginTableRegex.test(line) ||
+          unnamedTableRegex.test(line);
       });
     }
 
@@ -79,7 +92,10 @@ async function expandInputs(uri, visited = new Set()) {
       const m = inputCmd.exec(line); // already trimmed within regex
       if (m) {
         const relPath = m[1];
-        const basedir = path.dirname(uri.fsPath);
+        const isDotRelative = relPath.startsWith("./");
+        const basedir = isDotRelative
+          ? path.dirname(rootUri.fsPath)   // use root for ./ paths
+          : path.dirname(uri.fsPath);      // normal behavior
         const candidates = [
           path.resolve(basedir, relPath),
           path.resolve(basedir, relPath + ".tex"),
@@ -92,47 +108,56 @@ async function expandInputs(uri, visited = new Set()) {
           }
         }
 
-        // 🔹 Handle missing file here
-        // if (!target) {
-        //   const baseName = path.basename(candidates[1], ".tex");
-        //   expanded.push({
-        //     text: "",
-        //     uri: vscode.Uri.file(candidates[1]), // point to would-be file
-        //     lineNum: 0,
-        //     placeholder: `[${baseName}]`,
-        //     missing: true,
-        //   });
-        //   continue; // skip further expansion
-        // }
+        // Missing file → always add a placeholder inline at the current position
+        if (!target) {
+          const baseName = path.basename(candidates[1], ".tex");
+          expanded.push({
+            text: "",
+            uri: vscode.Uri.file(candidates[1]), // would-be file
+            lineNum: 0,
+            placeholder: `[${baseName}]`,
+            missing: true,
+            topLevel: uri.fsPath === rootUri.fsPath,
+          });
+          continue;
+        }
 
-        // Only flag as missing if not starting with './'
-if (!target) {
-  if (!relPath.startsWith('./')) {
-    const baseName = path.basename(candidates[1], ".tex");
-    expanded.push({
-      text: "",
-      uri: vscode.Uri.file(candidates[1]), // point to would-be file
-      lineNum: 0,
-      placeholder: `[${baseName}]`,
-      missing: true,
-    });
-  }
-  // Otherwise, just skip (don't add a missing node for local paths)
-  continue;
-}
-
-        // 🔹 Existing file → expand as before
+        // Existing file → expand recursively
         const baseName = path.basename(target.fsPath, ".tex");
-        const childExpanded = await expandInputs(target, visited);
+        const childExpanded = await expandInputs(target, visited, rootUri);
         if (contributesOutline(childExpanded)) {
           expanded.push(...childExpanded);
         } else {
+          // If the included file customizes \bibname but has no outline items,
+          // use it to label the placeholder more helpfully (e.g., "Chapter References").
+          let placeholderLabel = `[${baseName}]`;
+          for (const ce of childExpanded) {
+            if (!ce || !ce.text) continue;
+            const t = (ce.text || "").trim();
+            const mBib = renewBibNameRegex.exec(t) || renewRefNameRegex.exec(t);
+            if (mBib) {
+              const name = mBib[1].trim();
+              placeholderLabel = `Chapter ${name}`;
+              break;
+            }
+            const mPrint = printBibliographyRegex.exec(t);
+            if (mPrint && mPrint[1]) {
+              const opt = mPrint[1];
+              const mTitle = /(?:^|,)\s*title\s*=\s*\{([^}]*)\}/.exec(opt);
+              if (mTitle) {
+                placeholderLabel = `Chapter ${mTitle[1].trim()}`;
+                break;
+              }
+            }
+          }
+          // Inline placeholder so ordering matches the LaTeX source
           expanded.push({
             text: "",
             uri: target,
             lineNum: 0,
-            placeholder: `[${baseName}]`,
+            placeholder: placeholderLabel,
             missing: false,
+            topLevel: uri.fsPath === rootUri.fsPath,
           });
         }
         continue;
@@ -144,8 +169,10 @@ if (!target) {
 
   } catch (e) {
     // optionally console.error(e);
+  } finally {
+    visited.delete(uri.fsPath);
   }
-  visited.delete(uri.fsPath);
+
   return expanded;
 }
 
@@ -166,9 +193,23 @@ function extractLatexHierarchy(srcLines) {
   let appendixChapter = null;      // Track chapter inside appendix
   let currentAnnexure = null;      // Track annexture inside a chapter
 
+  // Front matter tracking
+  let insideFrontmatter = false;
+  let frontmatterNode = null;
+  let frontmatterChapter = null;   // Track chapter inside front matter
+
+  // Setup (pre-document) tracking
+  let beforeDocument = true;
+  let setupNode = null;
+  let bibNameOverride = null;
+  let refNameOverride = null;
+
   const lines = srcLines.map(x => x.text);
   const sectionRegex = /\\(part|chapter|section|subsection|subsubsection|annexture)(\*)?\{([^}]+)\}/;
   const appendixRegex = /\\appendix/;
+  const frontmatterRegex = /\\frontmatter/;
+  const mainmatterRegex = /\\mainmatter/;
+  const beginDocRegex = /\\begin\{document\}/;
   const tocRegex = /\\tableofcontents/;
   const lotRegex = /\\listoftables/;
   const lofRegex = /\\listoffigures/;
@@ -181,14 +222,18 @@ function extractLatexHierarchy(srcLines) {
 
   const captionRegex = /\\caption\{([^}]+)\}/;
   const bibliographyRegex = /\\bibliography\{[^}]+\}/;
+  const beginTheBibliographyRegex = /\\begin\{thebibliography\}\{[^}]*\}/;
+  const renewBibNameRegex = /\\renewcommand\s*\{\\bibname\}\s*\{([^}]+)\}/;
+  const renewRefNameRegex = /\\renewcommand\s*\{\\refname\}\s*\{([^}]+)\}/;
+  const printBibliographyRegex = /\\printbibliography(?:\[(.*?)\])?/;
   const unnamedTableRegex = /\\begin\{table\*?\}(?![\s\S]*?\\begin\{table\*?\}[\s\S]*?\\end\{table\*?\})/;
   const titleRegex = /\\title\{([^}]+)\}/;
 
   // match begin / end with optional star
   const beginFigureRegex = /^\s*\\begin\{figure\*?\}/;
-  const beginTableRegex  = /^\s*\\begin\{table\*?\}/;
-  const endFigureRegex   = /^\s*\\end\{figure\*?\}/;
-  const endTableRegex    = /^\s*\\end\{table\*?\}/;
+  const beginTableRegex = /^\s*\\begin\{table\*?\}/;
+  const endFigureRegex = /^\s*\\end\{figure\*?\}/;
+  const endTableRegex = /^\s*\\end\{table\*?\}/;
 
   function cleanLatexTitle(title) {
     return title.replace(/\\[a-zA-Z]+\{[^}]*\}/g, "").replace(/\\[a-zA-Z]+/g, "").trim();
@@ -196,50 +241,220 @@ function extractLatexHierarchy(srcLines) {
   let insideFigure = false, figureStartIdx = 0, figureCaption = null;
   let insideTable = false, tableStartIdx = 0, tableCaption = null;
 
-  // When inside a single figure environment we may also detect "inner" captionsetup-based
-  // tables/figures (e.g. minipage + \captionsetup{type=table}). Track whether the current
-  // figure contained any inner captioned items so we can avoid producing a duplicate
-  // outer figure entry if inner items already represent the content.
+  // Track if a figure env has inner captioned items (minipages + captionsetup)
   let insideFigureInnerCount = 0;
+
+  // New: pending placeholders/items encountered inside figure/table envs
+  let pendingFigureChildren = [];
+  let pendingTableChildren = [];
 
   for (let idx = 0; idx < lines.length; idx++) {
     let line = (lines[idx] || "").trim();
     if (line.startsWith("%")) continue;
-    const { uri, lineNum, placeholder, missing } = srcLines[idx];
+    const { uri, lineNum, placeholder, missing, topLevel } = srcLines[idx];
 
-    // 🔹 Handle placeholder directly (preserve missing flag)
+    // Detect start of document: end of "Setup" phase
+    if (beforeDocument && beginDocRegex.test(line)) {
+      beforeDocument = false;
+      // do not 'continue' here — allow same-line constructs if ever present
+    }
+
+    // Handle placeholder directly (preserve missing flag)
     if (placeholder) {
-      symbols.push({
+      const item = {
         label: placeholder,
         file: uri,
         line: lineNum,
         kind: "file",
         children: [],
         missing: !!missing,
-      });
+      };
+
+      // If inside a figure/table environment, defer to that environment
+      if (insideFigure) {
+        pendingFigureChildren.push(item);
+        continue;
+      }
+      if (insideTable) {
+        pendingTableChildren.push(item);
+        continue;
+      }
+
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+        continue;
+      }
+
+      // If this placeholder comes directly from a top-level include in the root file,
+      // show it at the top level (or within active frontmatter/appendix scopes),
+      // not nested under the previous section/chapter.
+      if (topLevel) {
+        if (insideAppendix && appendixNode) {
+          appendixNode.children.push(item);
+        } else if (insideFrontmatter && frontmatterNode) {
+          if (frontmatterChapter) frontmatterChapter.children.push(item);
+          else frontmatterNode.children.push(item);
+        } else {
+          symbols.push(item);
+        }
+        continue;
+      }
+
+      let parent =
+        parents.subsubsection ||
+        parents.subsection ||
+        parents.section ||
+        parents.annexture ||
+        parents.chapter;
+
+      if (insideAppendix && appendixNode) {
+        if (currentAnnexure) currentAnnexure.children.push(item);
+        else if (appendixChapter) appendixChapter.children.push(item);
+        else appendixNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        if (frontmatterChapter) frontmatterChapter.children.push(item);
+        else frontmatterNode.children.push(item);
+      } else if (parent) {
+        parent.children.push(item);
+      } else {
+        symbols.push(item);
+      }
+
       continue;
     }
 
     // Title / bibliography / titlepage / lists
     let titleMatch = titleRegex.exec(line);
     if (titleMatch) {
-      symbols.push({
+      const titleItem = {
         label: "Title",
         file: uri,
         line: lineNum,
         kind: "file",
         children: [],
-      });
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(titleItem);
+      } else if (insideFrontmatter && frontmatterNode) {
+        frontmatterNode.children.push(titleItem);
+      } else {
+        symbols.push(titleItem);
+      }
       continue;
     }
     if (bibliographyRegex.test(line)) {
-      symbols.push({
-        label: "References",
+      const bibItem = {
+        label: (bibNameOverride || refNameOverride || "References"),
         file: uri,
         line: lineNum,
         kind: "bibliography",
         children: [],
-      });
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(bibItem);
+      } else {
+        symbols.push(bibItem);
+      }
+      continue;
+    }
+    // Detect in-file label overrides for bibliography
+    let bibnameMatch = renewBibNameRegex.exec(line);
+    if (bibnameMatch) {
+      bibNameOverride = bibnameMatch[1].trim();
+      continue;
+    }
+    let refnameMatch = renewRefNameRegex.exec(line);
+    if (refnameMatch) {
+      refNameOverride = refnameMatch[1].trim();
+      continue;
+    }
+    // Detect thebibliography environment
+    if (beginTheBibliographyRegex.test(line)) {
+      const bibItem = {
+        label: (bibNameOverride || refNameOverride || "References"),
+        file: uri,
+        line: lineNum,
+        kind: "bibliography",
+        children: [],
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(bibItem);
+      } else {
+        symbols.push(bibItem);
+      }
+      continue;
+    }
+    // Detect biblatex's \printbibliography with optional [title={...}, ...]
+    let printBibMatch = printBibliographyRegex.exec(line);
+    if (printBibMatch) {
+      let label = (bibNameOverride || refNameOverride || "References");
+      const opts = printBibMatch[1];
+      if (opts) {
+        const titleMatch = /(?:^|,)\s*title\s*=\s*\{([^}]*)\}/.exec(opts);
+        if (titleMatch) label = titleMatch[1].trim();
+      }
+      const bibItem = {
+        label,
+        file: uri,
+        line: lineNum,
+        kind: "bibliography",
+        children: [],
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(bibItem);
+      } else {
+        symbols.push(bibItem);
+      }
       continue;
     }
     if (titlePageRegex.test(line)) {
@@ -251,7 +466,25 @@ function extractLatexHierarchy(srcLines) {
         kind: "file",
         children: [],
       };
-      symbols.push(titlePageSymbol);
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(titlePageSymbol);
+      } else if (insideFrontmatter && frontmatterNode) {
+        frontmatterNode.children.push(titlePageSymbol);
+      } else if (insideAppendix && appendixNode) {
+        appendixNode.children.push(titlePageSymbol);
+      } else {
+        symbols.push(titlePageSymbol);
+      }
       continue;
     }
     if (insideTitlePage && endTitlePageRegex.test(line)) {
@@ -260,33 +493,103 @@ function extractLatexHierarchy(srcLines) {
       continue;
     }
     if (tocRegex.test(line)) {
-      symbols.push({
+      const item = {
         label: "Table of Contents",
         file: uri,
         line: lineNum,
         kind: "toc",
         children: [],
-      });
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        frontmatterNode.children.push(item);
+      } else {
+        symbols.push(item);
+      }
       continue;
     }
     if (lotRegex.test(line)) {
-      symbols.push({
+      const item = {
         label: "List of Tables",
         file: uri,
         line: lineNum,
         kind: "lot",
         children: [],
-      });
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        frontmatterNode.children.push(item);
+      } else {
+        symbols.push(item);
+      }
       continue;
     }
     if (lofRegex.test(line)) {
-      symbols.push({
+      const item = {
         label: "List of Figures",
         file: uri,
         line: lineNum,
         kind: "lof",
         children: [],
-      });
+      };
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        frontmatterNode.children.push(item);
+      } else {
+        symbols.push(item);
+      }
+      continue;
+    }
+    if (frontmatterRegex.test(line)) {
+      frontmatterNode = {
+        label: "Front Matter",
+        file: uri,
+        line: lineNum,
+        kind: "frontmatter",
+        children: [],
+      };
+      symbols.push(frontmatterNode);
+      insideFrontmatter = true;
+      frontmatterChapter = null;
+      continue;
+    }
+    if (mainmatterRegex.test(line)) {
+      // End front matter if active
+      insideFrontmatter = false;
+      frontmatterChapter = null;
       continue;
     }
     if (appendixRegex.test(line)) {
@@ -316,7 +619,19 @@ function extractLatexHierarchy(srcLines) {
         kind: sectionType,
         children: [],
       };
-      if (insideAppendix && appendixNode) {
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideAppendix && appendixNode) {
         if (sectionType === "chapter") {
           appendixNode.children.push(item);
           appendixChapter = item;
@@ -334,6 +649,15 @@ function extractLatexHierarchy(srcLines) {
         } else {
           appendixNode.children.push(item);
         }
+      } else if (insideFrontmatter && frontmatterNode) {
+        if (sectionType === "chapter") {
+          frontmatterNode.children.push(item);
+          frontmatterChapter = item;
+        } else if (frontmatterChapter) {
+          frontmatterChapter.children.push(item);
+        } else {
+          frontmatterNode.children.push(item);
+        }
       } else {
         if (sectionType === "chapter") {
           symbols.push(item);
@@ -341,24 +665,29 @@ function extractLatexHierarchy(srcLines) {
           parents.section = null;
           parents.subsection = null;
           parents.subsubsection = null;
+          parents.annexture = null;
         } else if (sectionType === "section") {
           if (parents.chapter) parents.chapter.children.push(item);
           else symbols.push(item);
           parents.section = item;
           parents.subsection = null;
           parents.subsubsection = null;
+          parents.annexture = null;
         } else if (sectionType === "subsection") {
           if (parents.section) parents.section.children.push(item);
           else symbols.push(item);
           parents.subsection = item;
           parents.subsubsection = null;
+          parents.annexture = null;
         } else if (sectionType === "subsubsection") {
           if (parents.subsection) parents.subsection.children.push(item);
           else symbols.push(item);
           parents.subsubsection = item;
+          parents.annexture = null;
         } else if (sectionType === "annexture") {
           if (parents.section) parents.section.children.push(item);
           else symbols.push(item);
+          parents.annexture = item;
         }
       }
       lastParent = item;
@@ -373,12 +702,14 @@ function extractLatexHierarchy(srcLines) {
       figureStartIdx = idx;
       figureCaption = null;
       insideFigureInnerCount = 0;
+      pendingFigureChildren = [];
       // don't `continue` here — allow processing of captionsetup/caption on same line
     }
     if (beginTableRegex.test(line)) {
       insideTable = true;
       tableStartIdx = idx;
       tableCaption = null;
+      pendingTableChildren = [];
       // don't `continue` here — allow processing of caption on same line
     }
 
@@ -391,11 +722,32 @@ function extractLatexHierarchy(srcLines) {
         kind: "table",
         children: [],
       };
-      let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
-      if (insideAppendix && appendixNode) {
+
+            let parent =
+        parents.subsubsection ||
+        parents.subsection ||
+        parents.section ||
+        parents.annexture ||
+        parents.chapter;
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideAppendix && appendixNode) {
         if (currentAnnexure) currentAnnexure.children.push(item);
         else if (appendixChapter) appendixChapter.children.push(item);
         else appendixNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        if (frontmatterChapter) frontmatterChapter.children.push(item);
+        else frontmatterNode.children.push(item);
       } else if (parent) parent.children.push(item);
       else symbols.push(item);
       parents.table = item;
@@ -411,11 +763,32 @@ function extractLatexHierarchy(srcLines) {
         kind: "figure",
         children: [],
       };
-      let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
-      if (insideAppendix && appendixNode) {
+
+            let parent =
+        parents.subsubsection ||
+        parents.subsection ||
+        parents.section ||
+        parents.annexture ||
+        parents.chapter;
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: uri,
+            line: lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideAppendix && appendixNode) {
         if (currentAnnexure) currentAnnexure.children.push(item);
         else if (appendixChapter) appendixChapter.children.push(item);
         else appendixNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        if (frontmatterChapter) frontmatterChapter.children.push(item);
+        else frontmatterNode.children.push(item);
       } else if (parent) parent.children.push(item);
       else symbols.push(item);
       parents.figure = item;
@@ -446,9 +819,7 @@ function extractLatexHierarchy(srcLines) {
 
     // End figure: support both \end{figure} and \end{figure*}
     if (insideFigure && endFigureRegex.test(line)) {
-      // If we've already created inner captioned items inside this figure (minipages etc.)
-      // then prefer those rather than creating a duplicate outer "Figure" item.
-      if (insideFigureInnerCount === 0) {
+      if (insideFigureInnerCount === 0 || pendingFigureChildren.length > 0) {
         const start = srcLines[figureStartIdx];
         const item = {
           label: figureCaption ? figureCaption : "Figure",
@@ -457,17 +828,44 @@ function extractLatexHierarchy(srcLines) {
           kind: "figure",
           children: [],
         };
-        let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
-        if (insideAppendix && appendixNode) {
+
+        if (pendingFigureChildren.length > 0) {
+          item.children.push(...pendingFigureChildren);
+        }
+
+
+        let parent =
+          parents.subsubsection ||
+          parents.subsection ||
+          parents.section ||
+          parents.annexture ||
+          parents.chapter;
+        if (beforeDocument) {
+          if (!setupNode) {
+            setupNode = {
+              label: "Setup",
+              file: start.uri,
+              line: start.lineNum,
+              kind: "setup",
+              children: [],
+            };
+            symbols.push(setupNode);
+          }
+          setupNode.children.push(item);
+        } else if (insideAppendix && appendixNode) {
           if (currentAnnexure) currentAnnexure.children.push(item);
           else if (appendixChapter) appendixChapter.children.push(item);
           else appendixNode.children.push(item);
+        } else if (insideFrontmatter && frontmatterNode) {
+          if (frontmatterChapter) frontmatterChapter.children.push(item);
+          else frontmatterNode.children.push(item);
         } else if (parent) parent.children.push(item);
         else symbols.push(item);
       }
       insideFigure = false;
       figureCaption = null;
       insideFigureInnerCount = 0;
+      pendingFigureChildren = [];
       continue;
     }
 
@@ -481,15 +879,42 @@ function extractLatexHierarchy(srcLines) {
         kind: "table",
         children: [],
       };
-      let parent = parents.subsubsection || parents.subsection || parents.section || parents.chapter;
-      if (insideAppendix && appendixNode) {
+
+      if (pendingTableChildren.length > 0) {
+        item.children.push(...pendingTableChildren);
+      }
+
+
+            let parent =
+        parents.subsubsection ||
+        parents.subsection ||
+        parents.section ||
+        parents.annexture ||
+        parents.chapter;
+      if (beforeDocument) {
+        if (!setupNode) {
+          setupNode = {
+            label: "Setup",
+            file: start.uri,
+            line: start.lineNum,
+            kind: "setup",
+            children: [],
+          };
+          symbols.push(setupNode);
+        }
+        setupNode.children.push(item);
+      } else if (insideAppendix && appendixNode) {
         if (currentAnnexure) currentAnnexure.children.push(item);
         else if (appendixChapter) appendixChapter.children.push(item);
         else appendixNode.children.push(item);
+      } else if (insideFrontmatter && frontmatterNode) {
+        if (frontmatterChapter) frontmatterChapter.children.push(item);
+        else frontmatterNode.children.push(item);
       } else if (parent) parent.children.push(item);
       else symbols.push(item);
       insideTable = false;
       tableCaption = null;
+      pendingTableChildren = [];
       continue;
     }
 
@@ -514,7 +939,7 @@ class LatexTreeProvider {
   }
   async buildTreeRoot(uri) {
     this.rootUri = uri;
-    const expanded = await expandInputs(uri);
+    const expanded = await expandInputs(uri, new Set(), uri);
     this.items = extractLatexHierarchy(expanded);
     this._onDidChangeTreeData.fire();
   }
@@ -526,11 +951,11 @@ class LatexTreeProvider {
   getTreeItem(element) {
     let collapsible = element.children && element.children.length > 0
       ? (this._isExpanded ? vscode.TreeItemCollapsibleState.Expanded
-                          : vscode.TreeItemCollapsibleState.Collapsed)
+        : vscode.TreeItemCollapsibleState.Collapsed)
       : vscode.TreeItemCollapsibleState.None;
-  
+
     const item = new vscode.TreeItem(element.label, collapsible);
-  
+
     if (element.missing) {
       item.command = {
         command: 'latexOutline.createAndOpen',
@@ -550,8 +975,7 @@ class LatexTreeProvider {
       }
       item.description = element.kind;
     }
-    
-  
+
     const codicons = {
       "part": "notebook",
       "chapter": "book",
@@ -560,6 +984,8 @@ class LatexTreeProvider {
       "subsubsection": "root-folder",
       "annexture": "folder",
       "appendix": "archive",
+      "frontmatter": "archive",
+      "setup": "gear",
       "figure": "graph",
       "table": "table",
       "file": "file",
@@ -573,7 +999,7 @@ class LatexTreeProvider {
     }
     return item;
   }
-  
+
   getChildren(element) {
     if (!element) return this.items;
     return element.children;
@@ -646,7 +1072,7 @@ function activate(context) {
       try {
         // Ensure parent directory exists
         await fs.promises.mkdir(path.dirname(uri.fsPath), { recursive: true });
-  
+
         // Figure out the actual root file
         const rootUri = treeProvider.rootUri;
         let starter = "";
@@ -654,16 +1080,16 @@ function activate(context) {
           const relPath = path.relative(path.dirname(uri.fsPath), rootUri.fsPath);
           starter = `% !TeX root = ${relPath.replace(/\\/g, "/")}\n\n`;
         }
-  
+
         // Create the file only if it doesn’t already exist
         if (!fs.existsSync(uri.fsPath)) {
           await fs.promises.writeFile(uri.fsPath, starter, { flag: "wx" });
         }
-  
+
         // Open it
         const doc = await vscode.workspace.openTextDocument(uri);
         await vscode.window.showTextDocument(doc);
-  
+
         // Refresh the outline so placeholder becomes real node
         if (treeProvider && typeof treeProvider.refresh === "function") {
           await treeProvider.refresh();
@@ -673,7 +1099,7 @@ function activate(context) {
       }
     })
   );
-  
+
   context.subscriptions.push(
     vscode.commands.registerCommand("latexOutline.toggleExpandCollapse", async () => {
       await treeProvider.toggleExpandCollapse();
@@ -708,6 +1134,6 @@ function activate(context) {
   })();
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = { activate, deactivate };

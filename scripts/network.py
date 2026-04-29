@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import time
 import requests
+from postman import dispatch
 
 SUBNET = "192.168.1"
 START = 101
@@ -92,9 +93,8 @@ def postman(PING_STACK):
         except: degree = ""
 
         message = "\n".join([" ".join(row[:-1]) for row in PING_STACK]) + "\n\n" + degree
-        url = PLATFORM + "/kaptaan_network"
-        headers = {"Title": datetime.now().strftime("%Y.%m.%d %H:%M:%S")}
-        requests.post(url, data=message.encode("utf-8"), timeout=10, headers = headers)
+        title = datetime.now().strftime("%Y.%m.%d %H:%M:%S")
+        dispatch("kaptaan_network", title, message)
 
 while True:
     MACS, MD5_HASH = load_mac_names(MD5_HASH)
